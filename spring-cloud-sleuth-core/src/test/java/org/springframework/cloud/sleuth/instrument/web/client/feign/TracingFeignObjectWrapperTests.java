@@ -19,8 +19,7 @@ package org.springframework.cloud.sleuth.instrument.web.client.feign;
 import brave.Tracing;
 import brave.http.HttpTracing;
 import feign.Client;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -41,12 +40,12 @@ public class TracingFeignObjectWrapperTests {
 	@InjectMocks TraceFeignObjectWrapper traceFeignObjectWrapper;
 
 	@Test
-	public void should_wrap_a_client_into_lazy_trace_client() throws Exception {
+    void should_wrap_a_client_into_lazy_trace_client() throws Exception {
 		then(this.traceFeignObjectWrapper.wrap(mock(Client.class))).isExactlyInstanceOf(LazyTracingFeignClient.class);
 	}
 
 	@Test
-	public void should_not_wrap_a_bean_that_is_not_feign_related() throws Exception {
+    void should_not_wrap_a_bean_that_is_not_feign_related() throws Exception {
 		String notFeignRelatedObject = "object";
 		then(this.traceFeignObjectWrapper.wrap(notFeignRelatedObject)).isSameAs(notFeignRelatedObject);
 	}

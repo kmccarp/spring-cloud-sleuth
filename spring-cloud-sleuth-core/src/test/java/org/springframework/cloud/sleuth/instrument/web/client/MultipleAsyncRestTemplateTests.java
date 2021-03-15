@@ -16,21 +16,14 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import brave.Span;
 import brave.Tracer;
 import brave.sampler.Sampler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.awaitility.Awaitility;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -42,11 +35,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.AsyncClientHttpRequest;
-import org.springframework.http.client.AsyncClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.*;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -57,6 +46,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.AsyncRestTemplate;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import static org.assertj.core.api.BDDAssertions.then;
 
 /**
@@ -64,9 +59,9 @@ import static org.assertj.core.api.BDDAssertions.then;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(
-		classes = { MultipleAsyncRestTemplateTests.Config.class,
+		classes = {MultipleAsyncRestTemplateTests.Config.class,
 				MultipleAsyncRestTemplateTests.CustomExecutorConfig.class,
-				MultipleAsyncRestTemplateTests.ControllerConfig.class },
+				MultipleAsyncRestTemplateTests.ControllerConfig.class},
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 public class MultipleAsyncRestTemplateTests {
@@ -79,18 +74,18 @@ public class MultipleAsyncRestTemplateTests {
 	@Autowired Tracer tracer;
 	@LocalServerPort int port;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		this.wrappedExecutor = this.executor.getAsyncExecutor();
 	}
 
 	@Test
-	public void should_start_context_with_custom_async_client() throws Exception {
+    void should_start_context_with_custom_async_client() throws Exception {
 		then(this.asyncRestTemplate).isNotNull();
 	}
 
 	@Test
-	public void should_pass_tracing_context_with_custom_async_client() throws Exception {
+    void should_pass_tracing_context_with_custom_async_client() throws Exception {
 		Span span = this.tracer.nextSpan().name("foo");
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
 			String result = this.asyncRestTemplate.getForEntity("http://localhost:"
@@ -104,7 +99,7 @@ public class MultipleAsyncRestTemplateTests {
 	}
 
 	@Test
-	public void should_start_context_with_custom_executor() throws Exception {
+    void should_start_context_with_custom_executor() throws Exception {
 		then(this.executor).isNotNull();
 		then(this.wrappedExecutor).isInstanceOf(LazyTraceExecutor.class);
 
@@ -112,7 +107,7 @@ public class MultipleAsyncRestTemplateTests {
 	}
 
 	@Test
-	public void should_inject_traced_executor_that_passes_tracing_context() throws Exception {
+    void should_inject_traced_executor_that_passes_tracing_context() throws Exception {
 		Span span = this.tracer.nextSpan().name("foo");
 		AtomicBoolean executed = new AtomicBoolean(false);
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {

@@ -16,23 +16,14 @@
 
 package org.springframework.cloud.sleuth.instrument.messaging;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.annotation.PreDestroy;
-
 import brave.Span;
 import brave.Tracer;
 import brave.Tracing;
 import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -48,6 +39,12 @@ import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import javax.annotation.PreDestroy;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -82,18 +79,21 @@ public class ITTracingChannelInterceptor implements MessageHandler {
 		}
 	}
 
-	@Before public void init() {
+	@BeforeEach
+    void init() {
 		directChannel.subscribe(this);
 		executorChannel.subscribe(this);
 	}
 
-	@After public void close() {
+	@AfterEach
+    void close() {
 		directChannel.unsubscribe(this);
 		executorChannel.unsubscribe(this);
 	}
 
 	// formerly known as TraceChannelInterceptorTest.executableSpanCreation
-	@Test public void propagatesNoopSpan() {
+	@Test
+    void propagatesNoopSpan() {
 		directChannel.send(MessageBuilder.withPayload("hi").setHeader("X-B3-Sampled", "0")
 				.build());
 
@@ -102,7 +102,8 @@ public class ITTracingChannelInterceptor implements MessageHandler {
 		assertThat(currentSpan.isNoop()).isTrue();
 	}
 
-	@Test public void messageHeadersStillMutableForStomp() {
+	@Test
+    void messageHeadersStillMutableForStomp() {
 		directChannel.send(MessageBuilder.withPayload("hi").setHeader("stompCommand", "DISCONNECT")
 				.build());
 
@@ -119,7 +120,8 @@ public class ITTracingChannelInterceptor implements MessageHandler {
 				.isNotNull();
 	}
 
-	@Test public void messageHeadersImmutableForNonStomp() {
+	@Test
+    void messageHeadersImmutableForNonStomp() {
 		directChannel.send(MessageBuilder.withPayload("hi").setHeader("foo", "bar")
 				.build());
 

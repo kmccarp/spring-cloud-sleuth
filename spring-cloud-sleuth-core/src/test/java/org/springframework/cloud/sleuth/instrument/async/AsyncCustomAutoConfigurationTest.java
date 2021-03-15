@@ -16,7 +16,7 @@
 
 package org.springframework.cloud.sleuth.instrument.async;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 
 import static org.assertj.core.api.BDDAssertions.then;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.mock;
 public class AsyncCustomAutoConfigurationTest {
 
 	@Test
-	public void should_return_bean_when_its_not_a_async_configurer() throws Exception {
+    void should_return_bean_when_its_not_a_async_configurer() throws Exception {
 		AsyncCustomAutoConfiguration configuration = new AsyncCustomAutoConfiguration();
 
 		Object bean = configuration
@@ -38,7 +38,7 @@ public class AsyncCustomAutoConfigurationTest {
 	}
 
 	@Test
-	public void should_return_lazy_async_configurer_when_bean_is_async_configurer() throws Exception {
+    void should_return_lazy_async_configurer_when_bean_is_async_configurer() throws Exception {
 		AsyncCustomAutoConfiguration configuration = new AsyncCustomAutoConfiguration();
 
 		Object bean = configuration

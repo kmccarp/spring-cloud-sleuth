@@ -19,11 +19,10 @@ package org.springframework.cloud.sleuth.instrument.rxjava;
 import brave.Span;
 import brave.Tracer;
 import brave.sampler.Sampler;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -42,7 +41,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.awaitility.Awaitility.await;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { SleuthRxJavaTests.TestConfig.class })
+@SpringBootTest(classes = {SleuthRxJavaTests.TestConfig.class})
 @DirtiesContext
 public class SleuthRxJavaTests {
 
@@ -52,19 +51,19 @@ public class SleuthRxJavaTests {
 	Tracer tracer;
 	StringBuffer caller = new StringBuffer();
 
-	@Before
-	public void clean() {
+	@BeforeEach
+    void clean() {
 		this.reporter.clear();
 	}
 
-	@BeforeClass
-	@AfterClass
-	public static void cleanUp() {
+	@BeforeAll
+	@AfterAll
+    static void cleanUp() {
 		RxJavaPlugins.getInstance().reset();
 	}
 
 	@Test
-	public void should_create_new_span_when_rx_java_action_is_executed_and_there_was_no_span() {
+    void should_create_new_span_when_rx_java_action_is_executed_and_there_was_no_span() {
 		Observable
 				.defer(() -> Observable.just(
 						(Action0) () -> this.caller = new StringBuffer("actual_action")))
@@ -81,7 +80,7 @@ public class SleuthRxJavaTests {
 	}
 
 	@Test
-	public void should_continue_current_span_when_rx_java_action_is_executed() {
+    void should_continue_current_span_when_rx_java_action_is_executed() {
 		Span spanInCurrentThread = this.tracer.nextSpan().name("current_span");
 
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(spanInCurrentThread)) {

@@ -16,15 +16,15 @@
 
 package org.springframework.cloud.sleuth.instrument.messaging.issues.issue_943;
 
-import java.util.stream.Collectors;
-
 import brave.Span;
 import brave.Tracer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -34,7 +34,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 public class Issue943Tests {
 
 	@Test
-	public void should_pass_tracing_context_via_spring_integration() {
+    void should_pass_tracing_context_via_spring_integration() {
 		try (ConfigurableApplicationContext applicationContext = SpringApplication
 				.run(HelloSpringIntegration.class, "--spring.jmx.enabled=false", "--server.port=0")) {
 			// given

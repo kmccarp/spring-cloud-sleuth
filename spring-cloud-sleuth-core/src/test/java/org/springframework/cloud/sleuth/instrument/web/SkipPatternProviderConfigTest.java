@@ -16,10 +16,10 @@
 
 package org.springframework.cloud.sleuth.instrument.web;
 
-import java.util.regex.Pattern;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
+
+import java.util.regex.Pattern;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -29,7 +29,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 public class SkipPatternProviderConfigTest {
 
 	@Test
-	public void should_combine_skip_pattern_and_management_context_when_they_are_both_not_empty() throws Exception {
+    void should_combine_skip_pattern_and_management_context_when_they_are_both_not_empty() throws Exception {
 		SleuthWebProperties sleuthWebProperties = new SleuthWebProperties();
 		sleuthWebProperties.setSkipPattern("foo.*|bar.*");
 		Pattern pattern = TraceWebAutoConfiguration.SkipPatternProviderConfig.getPatternForManagementServerProperties(
@@ -39,7 +39,7 @@ public class SkipPatternProviderConfigTest {
 	}
 
 	@Test
-	public void should_combine_skip_pattern_management_context_and_additional_pattern_when_all_are_not_empty() throws Exception {
+    void should_combine_skip_pattern_management_context_and_additional_pattern_when_all_are_not_empty() throws Exception {
 		SleuthWebProperties sleuthWebProperties = new SleuthWebProperties();
 		sleuthWebProperties.setSkipPattern("foo.*|bar.*");
 		sleuthWebProperties.setAdditionalSkipPattern("baz.*|faz.*");
@@ -50,7 +50,7 @@ public class SkipPatternProviderConfigTest {
 	}
 
 	@Test
-	public void should_pick_skip_pattern_when_its_not_empty_and_management_context_is_empty() throws Exception {
+    void should_pick_skip_pattern_when_its_not_empty_and_management_context_is_empty() throws Exception {
 		SleuthWebProperties sleuthWebProperties = new SleuthWebProperties();
 		sleuthWebProperties.setSkipPattern("foo.*|bar.*");
 
@@ -60,7 +60,7 @@ public class SkipPatternProviderConfigTest {
 	}
 
 	@Test
-	public void should_pick_skip_pattern_and_additional_pattern_when_its_not_empty_and_management_context_is_empty() throws Exception {
+    void should_pick_skip_pattern_and_additional_pattern_when_its_not_empty_and_management_context_is_empty() throws Exception {
 		SleuthWebProperties sleuthWebProperties = new SleuthWebProperties();
 		sleuthWebProperties.setSkipPattern("foo.*|bar.*");
 		sleuthWebProperties.setAdditionalSkipPattern("baz.*|faz.*");
@@ -71,7 +71,7 @@ public class SkipPatternProviderConfigTest {
 	}
 
 	@Test
-	public void should_pick_management_context_when_skip_patterns_is_empty_and_context_path_is_not() throws Exception {
+    void should_pick_management_context_when_skip_patterns_is_empty_and_context_path_is_not() throws Exception {
 		SleuthWebProperties sleuthWebProperties = new SleuthWebProperties();
 		sleuthWebProperties.setSkipPattern("");
 
@@ -82,7 +82,7 @@ public class SkipPatternProviderConfigTest {
 	}
 
 	@Test
-	public void should_pick_management_context_and_additional_pattern_when_skip_patterns_is_empty_and_context_path_is_not() throws Exception {
+    void should_pick_management_context_and_additional_pattern_when_skip_patterns_is_empty_and_context_path_is_not() throws Exception {
 		SleuthWebProperties sleuthWebProperties = new SleuthWebProperties();
 		sleuthWebProperties.setSkipPattern("");
 		sleuthWebProperties.setAdditionalSkipPattern("baz.*|faz.*");
@@ -94,7 +94,7 @@ public class SkipPatternProviderConfigTest {
 	}
 
 	@Test
-	public void should_pick_default_pattern_when_both_management_context_and_skip_patterns_are_empty() throws Exception {
+    void should_pick_default_pattern_when_both_management_context_and_skip_patterns_are_empty() throws Exception {
 		SleuthWebProperties sleuthWebProperties = new SleuthWebProperties();
 		sleuthWebProperties.setSkipPattern("");
 		ManagementServerProperties managementServerProperties = new ManagementServerProperties();
@@ -107,7 +107,7 @@ public class SkipPatternProviderConfigTest {
 	}
 
 	@Test
-	public void should_pick_default_pattern_with_additional_pattern_when_both_management_context_and_skip_patterns_are_empty() throws Exception {
+    void should_pick_default_pattern_with_additional_pattern_when_both_management_context_and_skip_patterns_are_empty() throws Exception {
 		SleuthWebProperties sleuthWebProperties = new SleuthWebProperties();
 		sleuthWebProperties.setSkipPattern("");
 		sleuthWebProperties.setAdditionalSkipPattern("baz.*|faz.*");

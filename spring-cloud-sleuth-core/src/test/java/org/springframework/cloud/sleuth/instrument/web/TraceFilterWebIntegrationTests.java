@@ -16,22 +16,14 @@
 
 package org.springframework.cloud.sleuth.instrument.web;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import brave.Tracing;
 import brave.http.HttpAdapter;
 import brave.http.HttpSampler;
 import brave.sampler.Sampler;
 import org.assertj.core.api.BDDAssertions;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -51,6 +43,12 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import zipkin2.Span;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -69,14 +67,14 @@ public class TraceFilterWebIntegrationTests {
 	@Autowired Environment environment;
 	@Rule public OutputCapture capture = new OutputCapture();
 
-	@Before
-	@After
-	public void cleanup() {
+	@BeforeEach
+	@AfterEach
+    void cleanup() {
 		this.accumulator.clear();
 	}
 
 	@Test
-	public void should_not_create_a_span_for_error_controller() {
+    void should_not_create_a_span_for_error_controller() {
 		try {
 			new RestTemplate().getForObject("http://localhost:" + port() + "/", String.class);
 			BDDAssertions.fail("should fail due to runtime exception");
@@ -102,7 +100,7 @@ public class TraceFilterWebIntegrationTests {
 	}
 
 	@Test
-	public void should_create_spans_for_endpoint_returning_unsuccessful_result() {
+    void should_create_spans_for_endpoint_returning_unsuccessful_result() {
 		try {
 			new RestTemplate().getForObject("http://localhost:" + port() + "/test_bad_request", String.class);
 			fail("should throw exception");
@@ -117,7 +115,7 @@ public class TraceFilterWebIntegrationTests {
 	}
 
 	@Test
-	public void should_inject_http_sampler() {
+    void should_inject_http_sampler() {
 		then(this.sampler).isNotNull();
 	}
 

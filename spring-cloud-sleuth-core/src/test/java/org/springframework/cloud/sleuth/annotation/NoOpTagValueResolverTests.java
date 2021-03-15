@@ -16,7 +16,7 @@
 
 package org.springframework.cloud.sleuth.annotation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -24,7 +24,9 @@ import static org.assertj.core.api.BDDAssertions.then;
  * @author Marcin Grzejszczak
  */
 public class NoOpTagValueResolverTests {
-	@Test public void should_return_null() throws Exception {
+
+	@Test
+    void should_return_null() throws Exception {
 		then(new NoOpTagValueResolver().resolve("")).isNull();
 	}
 

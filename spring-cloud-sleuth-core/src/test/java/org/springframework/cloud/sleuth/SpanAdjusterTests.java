@@ -20,8 +20,7 @@ import brave.Span;
 import brave.Tracer;
 import brave.sampler.Sampler;
 import org.assertj.core.api.BDDAssertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,7 +42,7 @@ public class SpanAdjusterTests {
 	@Autowired Tracer tracer;
 
 	@Test
-	public void should_adjust_span_twice_before_reporting() {
+    void should_adjust_span_twice_before_reporting() {
 		Span hello = this.tracer.nextSpan().name("hello").start();
 
 		hello.finish();

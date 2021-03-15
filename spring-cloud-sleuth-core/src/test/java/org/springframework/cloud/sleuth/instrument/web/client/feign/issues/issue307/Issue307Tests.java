@@ -16,11 +16,9 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client.feign.issues.issue307;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import brave.sampler.Sampler;
-import org.junit.Test;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,12 +38,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Issue307Tests {
 
 	@Test
-	public void should_start_context() {
+    void should_start_context() {
 		try (ConfigurableApplicationContext applicationContext = SpringApplication
 				.run(SleuthSampleApplication.class, "--spring.jmx.enabled=false", "--server.port=0")) {
 		}

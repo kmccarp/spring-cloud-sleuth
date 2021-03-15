@@ -15,21 +15,10 @@
  */
 package integration;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.stream.Collectors;
-
 import brave.sampler.Sampler;
 import integration.MessagingApplicationTests.IntegrationSpanCollectorConfig;
-import sample.SampleMessagingApplication;
-import tools.AbstractIntegrationTest;
-import tools.SpanUtil;
-import zipkin2.Span;
-import zipkin2.reporter.Reporter;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
@@ -37,15 +26,25 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import sample.SampleMessagingApplication;
+import tools.AbstractIntegrationTest;
+import tools.SpanUtil;
+import zipkin2.Span;
+import zipkin2.reporter.Reporter;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.BDDAssertions.then;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = { IntegrationSpanCollectorConfig.class, SampleMessagingApplication.class },
+@SpringBootTest(classes = {IntegrationSpanCollectorConfig.class, SampleMessagingApplication.class},
 		webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@TestPropertySource(properties = { "sample.zipkin.enabled=true",
-		"spring.sleuth.http.legacy.enabled=true" })
+@TestPropertySource(properties = {"sample.zipkin.enabled=true",
+		"spring.sleuth.http.legacy.enabled=true"})
 @DirtiesContext
 public class MessagingApplicationTests extends AbstractIntegrationTest {
 
@@ -53,13 +52,13 @@ public class MessagingApplicationTests extends AbstractIntegrationTest {
 	private static String sampleAppUrl = "http://localhost:" + port;
 	@Autowired IntegrationTestZipkinSpanReporter integrationTestSpanCollector;
 
-	@After
-	public void cleanup() {
+	@AfterEach
+    void cleanup() {
 		this.integrationTestSpanCollector.hashedSpans.clear();
 	}
 
 	@Test
-	public void should_have_passed_trace_id_when_message_is_about_to_be_sent() {
+    void should_have_passed_trace_id_when_message_is_about_to_be_sent() {
 		long traceId = new Random().nextLong();
 
 		await().atMost(15, SECONDS).untilAsserted(() ->
@@ -67,17 +66,17 @@ public class MessagingApplicationTests extends AbstractIntegrationTest {
 		);
 
 		await().atMost(15, SECONDS).untilAsserted(() ->
-			thenAllSpansHaveTraceIdEqualTo(traceId)
+                thenAllSpansHaveTraceIdEqualTo(traceId)
 		);
 	}
 
 	@Test
-	public void should_have_passed_trace_id_and_generate_new_span_id_when_message_is_about_to_be_sent() {
+    void should_have_passed_trace_id_and_generate_new_span_id_when_message_is_about_to_be_sent() {
 		long traceId = new Random().nextLong();
 		long spanId = new Random().nextLong();
 
 		await().atMost(15, SECONDS).untilAsserted(() ->
-			httpMessageWithTraceIdInHeadersIsSuccessfullySent(sampleAppUrl + "/", traceId, spanId).run()
+                httpMessageWithTraceIdInHeadersIsSuccessfullySent(sampleAppUrl + "/", traceId, spanId).run()
 		);
 
 		await().atMost(15, SECONDS).untilAsserted(() -> {
@@ -87,7 +86,7 @@ public class MessagingApplicationTests extends AbstractIntegrationTest {
 	}
 
 	@Test
-	public void should_have_passed_trace_id_with_annotations_in_async_thread_when_message_is_about_to_be_sent() {
+    void should_have_passed_trace_id_with_annotations_in_async_thread_when_message_is_about_to_be_sent() {
 		long traceId = new Random().nextLong();
 
 		await().atMost(15, SECONDS).untilAsserted(() ->

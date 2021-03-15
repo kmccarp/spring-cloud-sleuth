@@ -16,18 +16,6 @@
 
 package org.springframework.cloud.sleuth.instrument.async;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
 import brave.ScopedSpan;
 import brave.Span;
 import brave.Tracer;
@@ -35,10 +23,9 @@ import brave.Tracing;
 import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
 import org.assertj.core.api.BDDAssertions;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.BDDMockito;
 import org.mockito.Mock;
@@ -48,6 +35,9 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cloud.sleuth.DefaultSpanNamer;
 import org.springframework.cloud.sleuth.SpanNamer;
 import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
+
+import java.util.*;
+import java.util.concurrent.*;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.BDDAssertions.then;
@@ -69,15 +59,15 @@ public class TraceableExecutorServiceTests {
 	Tracer tracer = this.tracing.tracer();
 	SpanVerifyingRunnable spanVerifyingRunnable = new SpanVerifyingRunnable();
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		this.traceManagerableExecutorService = new TraceableExecutorService(beanFactory(), this.executorService);
 		this.reporter.clear();
 		this.spanVerifyingRunnable.clear();
 	}
 
-	@After
-	public void tearDown() throws Exception {
+	@AfterEach
+    void tearDown() throws Exception {
 		this.traceManagerableExecutorService.shutdown();
 		this.executorService.shutdown();
 		if (Tracing.current() != null) {
@@ -86,7 +76,7 @@ public class TraceableExecutorServiceTests {
 	}
 
 	@Test
-	public void should_propagate_trace_id_and_set_new_span_when_traceable_executor_service_is_executed()
+    void should_propagate_trace_id_and_set_new_span_when_traceable_executor_service_is_executed()
 			throws Exception {
 		ScopedSpan span = this.tracer.startScopedSpan("http:PARENT");
 		try {
@@ -103,7 +93,7 @@ public class TraceableExecutorServiceTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void should_wrap_methods_in_trace_representation_only_for_non_tracing_callables() throws Exception {
+    void should_wrap_methods_in_trace_representation_only_for_non_tracing_callables() throws Exception {
 		ExecutorService executorService = Mockito.mock(ExecutorService.class);
 		TraceableExecutorService traceExecutorService = new TraceableExecutorService(beanFactory(), executorService);
 
@@ -113,8 +103,8 @@ public class TraceableExecutorServiceTests {
 
 		traceExecutorService.invokeAll(callables(), 1L, TimeUnit.DAYS);
 		BDDMockito.then(executorService).should().invokeAll(BDDMockito.argThat(
-				withSpanContinuingTraceCallablesOnly()),
-				BDDMockito.eq(1L) , BDDMockito.eq(TimeUnit.DAYS));
+                        withSpanContinuingTraceCallablesOnly()),
+				BDDMockito.eq(1L), BDDMockito.eq(TimeUnit.DAYS));
 
 		traceExecutorService.invokeAny(callables());
 		BDDMockito.then(executorService).should().invokeAny(BDDMockito.argThat(
@@ -122,8 +112,8 @@ public class TraceableExecutorServiceTests {
 
 		traceExecutorService.invokeAny(callables(), 1L, TimeUnit.DAYS);
 		BDDMockito.then(executorService).should().invokeAny(BDDMockito.argThat(
-				withSpanContinuingTraceCallablesOnly()),
-				BDDMockito.eq(1L) , BDDMockito.eq(TimeUnit.DAYS));
+                        withSpanContinuingTraceCallablesOnly()),
+				BDDMockito.eq(1L), BDDMockito.eq(TimeUnit.DAYS));
 	}
 
 	private ArgumentMatcher<Collection<? extends Callable<Object>>> withSpanContinuingTraceCallablesOnly() {
@@ -147,7 +137,7 @@ public class TraceableExecutorServiceTests {
 	}
 
 	@Test
-	public void should_propagate_trace_info_when_compleable_future_is_used() throws Exception {
+    void should_propagate_trace_info_when_compleable_future_is_used() throws Exception {
 		ExecutorService executorService = this.executorService;
 		BeanFactory beanFactory = beanFactory();
 		// tag::completablefuture[]

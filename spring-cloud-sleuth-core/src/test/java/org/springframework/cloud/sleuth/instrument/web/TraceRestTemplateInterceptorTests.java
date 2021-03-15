@@ -16,24 +16,18 @@
 
 package org.springframework.cloud.sleuth.instrument.web;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import brave.Span;
 import brave.Tracer;
 import brave.Tracing;
 import brave.http.HttpTracing;
-import brave.sampler.Sampler;
 import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
+import brave.sampler.Sampler;
 import brave.spring.web.TracingClientHttpRequestInterceptor;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.cloud.sleuth.util.SpanUtil;
 import org.springframework.http.HttpHeaders;
@@ -46,7 +40,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author Dave Syer
@@ -69,8 +69,8 @@ public class TraceRestTemplateInterceptorTests {
 	Tracer tracer = this.tracing.tracer();
 	TraceKeys traceKeys = new TraceKeys();
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		setInterceptors(HttpTracing.create(this.tracing));
 	}
 
@@ -79,13 +79,13 @@ public class TraceRestTemplateInterceptorTests {
 				TracingClientHttpRequestInterceptor.create(httpTracing)));
 	}
 
-	@After
-	public void clean() {
+	@AfterEach
+    void clean() {
 		Tracing.current().close();
 	}
 
 	@Test
-	public void headersAddedWhenNoTracingWasPresent() {
+    void headersAddedWhenNoTracingWasPresent() {
 		@SuppressWarnings("unchecked")
 		Map<String, String> headers = this.template.getForEntity("/", Map.class)
 				.getBody();
@@ -95,11 +95,11 @@ public class TraceRestTemplateInterceptorTests {
 	}
 
 	@Test
-	public void headersAddedWhenTracing() {
+    void headersAddedWhenTracing() {
 		Span span = this.tracer.nextSpan().name("new trace");
 		Map<String, String> headers;
 
-		try(Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
+		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
 			headers = this.template.getForEntity("/", Map.class)
 					.getBody();
 		} finally {
@@ -116,13 +116,13 @@ public class TraceRestTemplateInterceptorTests {
 
 	// Issue #290
 	@Test
-	public void requestHeadersAddedWhenTracing() {
+    void requestHeadersAddedWhenTracing() {
 		setInterceptors(HttpTracing.newBuilder(this.tracing)
 				.clientParser(new SleuthHttpClientParser(this.traceKeys))
 				.build());
 		Span span = this.tracer.nextSpan().name("new trace");
 
-		try(Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
+		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
 			this.template.getForEntity("/foo?a=b", Map.class);
 		} finally {
 			span.finish();
@@ -137,7 +137,7 @@ public class TraceRestTemplateInterceptorTests {
 	}
 
 	@Test
-	public void notSampledHeaderAddedWhenNotExportable() {
+    void notSampledHeaderAddedWhenNotExportable() {
 		Tracing tracing = Tracing.newBuilder()
 				.currentTraceContext(ThreadLocalCurrentTraceContext.newBuilder()
 						.addScopeDecorator(StrictScopeDecorator.create())
@@ -151,7 +151,7 @@ public class TraceRestTemplateInterceptorTests {
 		Span span = tracing.tracer().nextSpan().name("new trace");
 		Map<String, String> headers;
 
-		try(Tracer.SpanInScope ws = tracing.tracer().withSpanInScope(span.start())) {
+		try (Tracer.SpanInScope ws = tracing.tracer().withSpanInScope(span.start())) {
 			headers = this.template.getForEntity("/", Map.class)
 					.getBody();
 		} finally {
@@ -163,12 +163,12 @@ public class TraceRestTemplateInterceptorTests {
 
 	// issue #198
 	@Test
-	public void spanRemovedFromThreadUponException() {
+    void spanRemovedFromThreadUponException() {
 		Span span = this.tracer.nextSpan().name("new trace");
 
-		try(Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
+		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
 			this.template.getForEntity("/exception", Map.class).getBody();
-			Assert.fail("should throw an exception");
+			fail("should throw an exception");
 		} catch (RuntimeException e) {
 			then(e).hasMessage("500 Internal Server Error");
 		} finally {
@@ -179,13 +179,13 @@ public class TraceRestTemplateInterceptorTests {
 	}
 
 	@Test
-	public void createdSpanNameHasOnlyPrintableAsciiCharactersForNonEncodedURIWithNonAsciiChars() {
+    void createdSpanNameHasOnlyPrintableAsciiCharactersForNonEncodedURIWithNonAsciiChars() {
 		setInterceptors(HttpTracing.newBuilder(this.tracing)
 				.clientParser(new SleuthHttpClientParser(this.traceKeys))
 				.build());
 		Span span = this.tracer.nextSpan().name("new trace");
 
-		try(Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
+		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
 			this.template.getForEntity("/cas~fs~åˆ’", Map.class).getBody();
 		} catch (Exception e) {
 
@@ -202,13 +202,13 @@ public class TraceRestTemplateInterceptorTests {
 	}
 
 	@Test
-	public void willShortenTheNameOfTheSpan() {
+    void willShortenTheNameOfTheSpan() {
 		setInterceptors(HttpTracing.newBuilder(this.tracing)
 				.clientParser(new SleuthHttpClientParser(this.traceKeys))
 				.build());
 		Span span = this.tracer.nextSpan().name("new trace");
 
-		try(Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
+		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
 			this.template.getForEntity("/" + bigName(), Map.class).getBody();
 		} catch (Exception e) {
 

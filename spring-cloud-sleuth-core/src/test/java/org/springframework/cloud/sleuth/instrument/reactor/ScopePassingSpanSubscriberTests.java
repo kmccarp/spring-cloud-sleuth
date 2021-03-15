@@ -19,8 +19,7 @@ package org.springframework.cloud.sleuth.instrument.reactor;
 import brave.Span;
 import brave.Tracer;
 import brave.Tracing;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.junit.MockitoJUnitRunner;
 import reactor.util.context.Context;
 
@@ -35,7 +34,7 @@ public class ScopePassingSpanSubscriberTests {
 	Tracing tracing = Tracing.newBuilder().build();
 
 	@Test
-	public void should_propagate_current_context() {
+    void should_propagate_current_context() {
 		ScopePassingSpanSubscriber subscriber = new ScopePassingSpanSubscriber(
 				null, Context.of("foo", "bar"), this.tracing);
 
@@ -43,7 +42,7 @@ public class ScopePassingSpanSubscriberTests {
 	}
 
 	@Test
-	public void should_set_empty_context_when_context_is_null() {
+    void should_set_empty_context_when_context_is_null() {
 		ScopePassingSpanSubscriber subscriber = new ScopePassingSpanSubscriber(
 				null, null, this.tracing);
 
@@ -51,7 +50,7 @@ public class ScopePassingSpanSubscriberTests {
 	}
 
 	@Test
-	public void should_put_current_span_to_context() {
+    void should_put_current_span_to_context() {
 		Span span = this.tracing.tracer().nextSpan();
 		try (Tracer.SpanInScope ws = this.tracing.tracer().withSpanInScope(span.start())) {
 			ScopePassingSpanSubscriber subscriber = new ScopePassingSpanSubscriber(

@@ -16,22 +16,21 @@
 
 package org.springframework.cloud.sleuth.instrument.async;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import brave.Span;
 import brave.Tracer;
 import brave.Tracing;
 import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.sleuth.DefaultSpanNamer;
 import org.springframework.cloud.sleuth.SpanName;
 import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -48,15 +47,15 @@ public class TraceCallableTests {
 			.build();
 	Tracer tracer = this.tracing.tracer();
 
-	@After
-	public void clean() {
+	@AfterEach
+    void clean() {
 		this.tracing.close();
 		this.reporter.clear();
 		this.executor.shutdown();
 	}
 
 	@Test
-	public void should_not_see_same_trace_id_in_successive_tasks()
+    void should_not_see_same_trace_id_in_successive_tasks()
 			throws Exception {
 		Span firstSpan = givenCallableGetsSubmitted(
 				thatRetrievesTraceFromThreadLocal());
@@ -69,7 +68,7 @@ public class TraceCallableTests {
 	}
 
 	@Test
-	public void should_remove_span_from_thread_local_after_finishing_work()
+    void should_remove_span_from_thread_local_after_finishing_work()
 			throws Exception {
 		givenCallableGetsSubmitted(thatRetrievesTraceFromThreadLocal());
 
@@ -80,10 +79,10 @@ public class TraceCallableTests {
 	}
 
 	@Test
-	public void should_remove_parent_span_from_thread_local_after_finishing_work()
+    void should_remove_parent_span_from_thread_local_after_finishing_work()
 			throws Exception {
 		Span parent = this.tracer.nextSpan().name("http:parent");
-		try(Tracer.SpanInScope ws = this.tracer.withSpanInScope(parent)){
+		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(parent)) {
 			Span child = givenCallableGetsSubmitted(thatRetrievesTraceFromThreadLocal());
 			then(parent).as("parent").isNotNull();
 			then(child.context().parentId()).isEqualTo(parent.context().spanId());
@@ -97,7 +96,7 @@ public class TraceCallableTests {
 	}
 
 	@Test
-	public void should_take_name_of_span_from_span_name_annotation()
+    void should_take_name_of_span_from_span_name_annotation()
 			throws Exception {
 		whenATraceKeepingCallableGetsSubmitted();
 
@@ -106,7 +105,7 @@ public class TraceCallableTests {
 	}
 
 	@Test
-	public void should_take_name_of_span_from_to_string_if_span_name_annotation_is_missing()
+    void should_take_name_of_span_from_to_string_if_span_name_annotation_is_missing()
 			throws Exception {
 		whenCallableGetsSubmitted(
 				thatRetrievesTraceFromThreadLocal());

@@ -16,23 +16,17 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client;
 
-import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
 import brave.Tracer;
 import brave.Tracing;
 import brave.sampler.Sampler;
-import org.springframework.cloud.sleuth.instrument.web.TraceWebServletAutoConfiguration;
-import zipkin2.Span;
 import org.assertj.core.api.BDDAssertions;
 import org.awaitility.Awaitility;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.sleuth.instrument.web.TraceWebServletAutoConfiguration;
 import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,6 +37,11 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.AsyncRestTemplate;
+import zipkin2.Span;
+
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -52,7 +51,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {
-		TraceWebAsyncClientAutoConfigurationTests.TestConfiguration.class },
+		TraceWebAsyncClientAutoConfigurationTests.TestConfiguration.class},
 		webEnvironment = RANDOM_PORT)
 public class TraceWebAsyncClientAutoConfigurationTests {
 	@Autowired AsyncRestTemplate asyncRestTemplate;
@@ -60,13 +59,13 @@ public class TraceWebAsyncClientAutoConfigurationTests {
 	@Autowired ArrayListSpanReporter accumulator;
 	@Autowired Tracing tracer;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		this.accumulator.clear();
 	}
 
 	@Test
-	public void should_close_span_upon_success_callback()
+    void should_close_span_upon_success_callback()
 			throws ExecutionException, InterruptedException {
 		brave.Span initialSpan = this.tracer.tracer().nextSpan().name("foo");
 
@@ -87,7 +86,7 @@ public class TraceWebAsyncClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void should_close_span_upon_failure_callback()
+    void should_close_span_upon_failure_callback()
 			throws ExecutionException, InterruptedException {
 		ListenableFuture<ResponseEntity<String>> future;
 		try {

@@ -16,18 +16,12 @@
 
 package org.springframework.cloud.sleuth.instrument.web.multiple;
 
-import java.net.URI;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import brave.Span;
 import brave.Tracer;
 import brave.propagation.ExtraFieldPropagation;
 import brave.sampler.Sampler;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
@@ -45,6 +39,11 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
@@ -55,7 +54,7 @@ import static org.awaitility.Awaitility.await;
 @TestPropertySource(properties = {
 		"spring.application.name=multiplehopsintegrationtests",
 		"spring.sleuth.http.legacy.enabled=true"
-})
+        })
 @SpringBootTest(classes = MultipleHopsIntegrationTests.Config.class,
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("baggage")
@@ -67,13 +66,13 @@ public class MultipleHopsIntegrationTests {
 	@Autowired Config config;
 	@Autowired DemoApplication application;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		this.reporter.clear();
 	}
 
 	@Test
-	public void should_prepare_spans_for_export() throws Exception {
+    void should_prepare_spans_for_export() throws Exception {
 		this.restTemplate.getForObject("http://localhost:" + this.config.port + "/greeting", String.class);
 
 		await().atMost(5, SECONDS).untilAsserted(() -> {
@@ -96,17 +95,7 @@ public class MultipleHopsIntegrationTests {
 
 	// issue #237 - baggage
 	@Test
-	// Notes:
-	// * path-prefix header propagation can't reliably support mixed case, due to http/2 downcasing
-	//   * Since not all tokenizers are case insensitive, mixed case can break correlation
-	//   * Brave's ExtraFieldPropagation downcases due to the above
-	//   * This code should probably test the side-effect on http headers
-	// * the assumption all correlation fields (baggage) are saved to a span is an interesting one
-	//   * should all correlation fields (baggage) be added to the MDC context?
-	// * Until below, a configuration item of a correlation field whitelist is needed
-	//   * https://github.com/openzipkin/brave/pull/577
-	//   * probably needed anyway as an empty whitelist is a nice way to disable the feature
-	public void should_propagate_the_baggage() throws Exception {
+    void should_propagate_the_baggage() throws Exception {
 		//tag::baggage[]
 		Span initialSpan = this.tracer.nextSpan().name("span").start();
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(initialSpan)) {

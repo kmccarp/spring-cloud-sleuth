@@ -17,8 +17,7 @@
 package org.springframework.cloud.sleuth.instrument.messaging.websocket;
 
 import brave.sampler.Sampler;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,7 +43,8 @@ public class TraceWebSocketAutoConfigurationTests {
 	@Autowired
 	DelegatingWebSocketMessageBrokerConfiguration delegatingWebSocketMessageBrokerConfiguration;
 
-	@Test public void should_register_interceptors_for_all_channels() {
+	@Test
+    void should_register_interceptors_for_all_channels() {
 		then(this.delegatingWebSocketMessageBrokerConfiguration.clientInboundChannel()
 				.getInterceptors())
 				.hasAtLeastOneElementOfType(TracingChannelInterceptor.class);

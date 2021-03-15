@@ -20,9 +20,8 @@ import brave.Span;
 import brave.Tracer;
 import brave.Tracing;
 import brave.sampler.Sampler;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -38,9 +37,7 @@ import org.springframework.messaging.PollableChannel;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Spencer Gibb
@@ -55,11 +52,13 @@ public class TraceContextPropagationChannelInterceptorTests {
 	@Autowired private Tracing tracing;
 	@Autowired private ArrayListSpanReporter reporter;
 
-	@After public void close() {
+	@AfterEach
+    void close() {
 		this.reporter.clear();
 	}
 
-	@Test public void testSpanPropagation() {
+	@Test
+    void testSpanPropagation() {
 		Span span = this.tracing.tracer().nextSpan().name("http:testSendMessage").start();
 		String expectedSpanId = SpanUtil.idToHex(span.context().spanId());
 		try (Tracer.SpanInScope ws = this.tracing.tracer().withSpanInScope(span)) {

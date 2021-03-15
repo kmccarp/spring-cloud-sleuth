@@ -17,16 +17,13 @@
 
 package org.springframework.cloud.sleuth.instrument.web;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import brave.Span;
 import brave.Tracer;
 import brave.sampler.Sampler;
 import org.awaitility.Awaitility;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.sleuth.SpanName;
@@ -38,12 +35,14 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.BDDAssertions.then;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {
-		TraceAsyncIntegrationTests.TraceAsyncITestConfiguration.class },
+		TraceAsyncIntegrationTests.TraceAsyncITestConfiguration.class},
 		properties = "spring.sleuth.http.legacy.enabled=true")
 public class TraceAsyncIntegrationTests {
 
@@ -54,28 +53,28 @@ public class TraceAsyncIntegrationTests {
 	@Autowired
 	ArrayListSpanReporter reporter;
 
-	@Before
-	public void cleanup() {
+	@BeforeEach
+    void cleanup() {
 		this.reporter.clear();
 		this.classPerformingAsyncLogic.clear();
 	}
 
 	@Test
-	public void should_set_span_on_an_async_annotated_method() {
+    void should_set_span_on_an_async_annotated_method() {
 		whenAsyncProcessingTakesPlace();
 
 		thenANewAsyncSpanGetsCreated();
 	}
 
 	@Test
-	public void should_set_span_with_custom_method_on_an_async_annotated_method() {
+    void should_set_span_with_custom_method_on_an_async_annotated_method() {
 		whenAsyncProcessingTakesPlaceWithCustomSpanName();
 
 		thenAsyncSpanHasCustomName();
 	}
 
 	@Test
-	public void should_continue_a_span_on_an_async_annotated_method() {
+    void should_continue_a_span_on_an_async_annotated_method() {
 		Span span = givenASpanInCurrentThread();
 
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span)) {
@@ -88,7 +87,7 @@ public class TraceAsyncIntegrationTests {
 	}
 
 	@Test
-	public void should_continue_a_span_with_custom_method_on_an_async_annotated_method() {
+    void should_continue_a_span_with_custom_method_on_an_async_annotated_method() {
 		Span span = givenASpanInCurrentThread();
 
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span)) {
@@ -166,8 +165,8 @@ public class TraceAsyncIntegrationTests {
 				});
 	}
 
-	@After
-	public void cleanTrace(){
+	@AfterEach
+    void cleanTrace() {
 		this.reporter.clear();
 	}
 

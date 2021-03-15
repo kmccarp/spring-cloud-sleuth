@@ -35,7 +35,7 @@ import org.springframework.web.client.RestTemplate;
  */
 @RestController
 public class SampleController
-		implements ApplicationListener<ServletWebServerInitializedEvent > {
+		implements ApplicationListener<ServletWebServerInitializedEvent> {
 	private static final Log log = LogFactory.getLog(SampleController.class);
 	@Autowired
 	private RestTemplate restTemplate;

@@ -43,7 +43,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 @ConditionalOnBean(Tracing.class)
 @ConditionalOnProperty(value = "spring.sleuth.integration.websockets.enabled", matchIfMissing = true)
 public class TraceWebSocketAutoConfiguration
-		extends AbstractWebSocketMessageBrokerConfigurer {
+extends AbstractWebSocketMessageBrokerConfigurer {
 
 	@Autowired
 	Tracing tracing;

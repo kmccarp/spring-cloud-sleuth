@@ -16,22 +16,13 @@
 
 package org.springframework.cloud.sleuth.instrument.async.issues.issue410;
 
-import java.lang.invoke.MethodHandles;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicReference;
-
 import brave.Span;
 import brave.Tracer;
 import brave.sampler.Sampler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.awaitility.Awaitility;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -52,6 +43,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+
+import java.lang.invoke.MethodHandles;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -81,7 +79,7 @@ public class Issue410Tests {
 	Application.MyService executorService;
 
 	@Test
-	public void should_pass_tracing_info_for_tasks_running_without_a_pool() {
+    void should_pass_tracing_info_for_tasks_running_without_a_pool() {
 		Span span = this.tracer.nextSpan().name("foo");
 		log.info("Starting test");
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span)) {
@@ -95,7 +93,7 @@ public class Issue410Tests {
 						.isEqualTo(span.context().traceId());
 			});
 		}
-		finally {
+                finally {
 			span.finish();
 		}
 
@@ -103,7 +101,7 @@ public class Issue410Tests {
 	}
 
 	@Test
-	public void should_pass_tracing_info_for_tasks_running_with_a_pool() {
+    void should_pass_tracing_info_for_tasks_running_with_a_pool() {
 		Span span = this.tracer.nextSpan().name("foo");
 		log.info("Starting test");
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span)) {
@@ -117,7 +115,7 @@ public class Issue410Tests {
 						.isEqualTo(span.context().traceId());
 			});
 		}
-		finally {
+                finally {
 			span.finish();
 		}
 
@@ -128,7 +126,7 @@ public class Issue410Tests {
 	 * Related to issue #423
 	 */
 	@Test
-	public void should_pass_tracing_info_for_completable_futures_with_executor() {
+    void should_pass_tracing_info_for_completable_futures_with_executor() {
 		Span span = this.tracer.nextSpan().name("foo");
 		log.info("Starting test");
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span)) {
@@ -142,7 +140,7 @@ public class Issue410Tests {
 						.isEqualTo(span.context().traceId());
 			});
 		}
-		finally {
+                finally {
 			span.finish();
 		}
 
@@ -153,7 +151,7 @@ public class Issue410Tests {
 	 * Related to issue #423
 	 */
 	@Test
-	public void should_pass_tracing_info_for_completable_futures_with_task_scheduler() {
+    void should_pass_tracing_info_for_completable_futures_with_task_scheduler() {
 		Span span = this.tracer.nextSpan().name("foo");
 		log.info("Starting test");
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span)) {
@@ -167,7 +165,7 @@ public class Issue410Tests {
 						.isEqualTo(span.context().traceId());
 			});
 		}
-		finally {
+                finally {
 			span.finish();
 		}
 
@@ -178,7 +176,7 @@ public class Issue410Tests {
 	 * Related to issue #1232
 	 */
 	@Test
-	public void should_pass_tracing_info_for_completable_futures_with_threadPoolTaskScheduler() {
+    void should_pass_tracing_info_for_completable_futures_with_threadPoolTaskScheduler() {
 		Span span = this.tracer.nextSpan().name("foo");
 		log.info("Starting test");
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span)) {
@@ -192,7 +190,7 @@ public class Issue410Tests {
 						.isEqualTo(span.context().traceId());
 			});
 		}
-		finally {
+                finally {
 			span.finish();
 		}
 
@@ -203,7 +201,7 @@ public class Issue410Tests {
 	 * Related to issue #1232
 	 */
 	@Test
-	public void should_pass_tracing_info_for_completable_futures_with_scheduledThreadPoolExecutor() {
+    void should_pass_tracing_info_for_completable_futures_with_scheduledThreadPoolExecutor() {
 		Span span = this.tracer.nextSpan().name("foo");
 		log.info("Starting test");
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span)) {
@@ -217,7 +215,7 @@ public class Issue410Tests {
 						.isEqualTo(span.context().traceId());
 			});
 		}
-		finally {
+                finally {
 			span.finish();
 		}
 

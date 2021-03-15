@@ -22,9 +22,9 @@ import brave.propagation.CurrentTraceContext.Scope;
 import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
 import brave.propagation.TraceContext;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 
@@ -49,14 +49,14 @@ public class Slf4JSpanLoggerTest {
 					.addScopeDecorator(StrictScopeDecorator.create())
 					.build());
 
-	@Before
-	@After
-	public void setup() {
+	@BeforeEach
+	@AfterEach
+    void setup() {
 		MDC.clear();
 	}
 
 	@Test
-	public void should_set_entries_to_mdc_from_span() throws Exception {
+    void should_set_entries_to_mdc_from_span() throws Exception {
 		try (Scope scope = this.slf4jCurrentTraceContext.newScope(this.span.context())) {
 			assertMDCInfoEqualToSpanInfo(span.context());
 		}
@@ -65,7 +65,7 @@ public class Slf4JSpanLoggerTest {
 	}
 
 	@Test
-	public void should_set_entries_to_mdc_from_two_spans() throws Exception {
+    void should_set_entries_to_mdc_from_two_spans() throws Exception {
 		try (Scope scope = this.slf4jCurrentTraceContext.newScope(this.span.context())) {
 
 			assertMDCInfoEqualToSpanInfo(span.context());
@@ -81,7 +81,7 @@ public class Slf4JSpanLoggerTest {
 	}
 
 	@Test
-	public void should_set_entries_to_mdc_from_two_spans1() throws Exception {
+    void should_set_entries_to_mdc_from_two_spans1() throws Exception {
 		try (Scope scope = this.slf4jCurrentTraceContext.newScope(this.span.context())) {
 
 			assertMDCInfoEqualToSpanInfo(span.context());
@@ -97,7 +97,7 @@ public class Slf4JSpanLoggerTest {
 	}
 
 	@Test
-	public void should_set_entries_to_mdc_from_two_spans2() throws Exception {
+    void should_set_entries_to_mdc_from_two_spans2() throws Exception {
 		try (Scope scope = this.slf4jCurrentTraceContext.newScope(this.span.context())) {
 
 			assertMDCInfoEqualToSpanInfo(span.context());
@@ -114,7 +114,7 @@ public class Slf4JSpanLoggerTest {
 	}
 
 	@Test
-	public void should_set_entries_to_mdc_from_two_spans3() throws Exception {
+    void should_set_entries_to_mdc_from_two_spans3() throws Exception {
 		try (Scope scope = this.slf4jCurrentTraceContext.newScope(null)) {
 
 			assertMDCInfoNullOrEmpty();
@@ -130,7 +130,7 @@ public class Slf4JSpanLoggerTest {
 	}
 
 	@Test
-	public void should_remove_entries_from_mdc_from_null_span() throws Exception {
+    void should_remove_entries_from_mdc_from_null_span() throws Exception {
 		MDC.put("X-B3-TraceId", "A");
 		MDC.put("traceId", "A");
 		MDC.put("X-B3-SpanId", "A");

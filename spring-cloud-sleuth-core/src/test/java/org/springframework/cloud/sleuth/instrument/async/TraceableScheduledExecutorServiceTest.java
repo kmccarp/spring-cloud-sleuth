@@ -16,17 +16,11 @@
 
 package org.springframework.cloud.sleuth.instrument.async;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
-
 import brave.Tracing;
 import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
@@ -35,6 +29,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cloud.sleuth.DefaultSpanNamer;
 import org.springframework.cloud.sleuth.SpanNamer;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -58,13 +57,13 @@ public class TraceableScheduledExecutorServiceTest {
 	@InjectMocks
 	TraceableScheduledExecutorService traceableScheduledExecutorService;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		beanFactory();
 	}
 
 	@Test
-	public void should_schedule_a_trace_runnable() throws Exception {
+    void should_schedule_a_trace_runnable() throws Exception {
 		this.traceableScheduledExecutorService.schedule(aRunnable(), 1L, TimeUnit.DAYS);
 
 		then(this.scheduledExecutorService).should().schedule(
@@ -74,7 +73,7 @@ public class TraceableScheduledExecutorServiceTest {
 	}
 
 	@Test
-	public void should_schedule_a_trace_callable() throws Exception {
+    void should_schedule_a_trace_callable() throws Exception {
 		this.traceableScheduledExecutorService.schedule(aCallable(), 1L, TimeUnit.DAYS);
 
 		then(this.scheduledExecutorService).should().schedule(
@@ -84,7 +83,7 @@ public class TraceableScheduledExecutorServiceTest {
 	}
 
 	@Test
-	public void should_schedule_at_fixed_rate_a_trace_runnable()
+    void should_schedule_at_fixed_rate_a_trace_runnable()
 			throws Exception {
 		this.traceableScheduledExecutorService.scheduleAtFixedRate(aRunnable(), 1L, 1L,
 				TimeUnit.DAYS);
@@ -95,7 +94,7 @@ public class TraceableScheduledExecutorServiceTest {
 	}
 
 	@Test
-	public void should_schedule_with_fixed_delay_a_trace_runnable()
+    void should_schedule_with_fixed_delay_a_trace_runnable()
 			throws Exception {
 		this.traceableScheduledExecutorService.scheduleWithFixedDelay(aRunnable(), 1L, 1L,
 				TimeUnit.DAYS);

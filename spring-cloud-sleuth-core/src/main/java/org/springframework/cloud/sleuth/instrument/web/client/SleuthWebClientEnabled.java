@@ -31,7 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
  * @since 1.0.11
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Documented
 @ConditionalOnProperty(value = "spring.sleuth.web.client.enabled", matchIfMissing = true)
 @interface SleuthWebClientEnabled {

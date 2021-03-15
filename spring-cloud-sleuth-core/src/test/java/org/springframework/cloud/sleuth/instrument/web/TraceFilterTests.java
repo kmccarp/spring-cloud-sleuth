@@ -16,10 +16,6 @@
 
 package org.springframework.cloud.sleuth.instrument.web;
 
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Pattern;
-import javax.servlet.Filter;
-
 import brave.ErrorParser;
 import brave.Span;
 import brave.Tracer;
@@ -29,9 +25,9 @@ import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
 import brave.sampler.Sampler;
 import brave.servlet.TracingFilter;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.cloud.sleuth.util.SpanUtil;
 import org.springframework.http.HttpMethod;
@@ -43,8 +39,12 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import javax.servlet.Filter;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
+
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 /**
@@ -80,8 +80,8 @@ public class TraceFilterTests {
 	MockHttpServletResponse response;
 	MockFilterChain filterChain;
 
-	@Before
-	public void init() {
+	@BeforeEach
+    void init() {
 		this.request = builder().buildRequest(new MockServletContext());
 		this.response = new MockHttpServletResponse();
 		this.response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -93,13 +93,13 @@ public class TraceFilterTests {
 				"MockMvc");
 	}
 
-	@After
-	public void cleanup() {
+	@AfterEach
+    void cleanup() {
 		Tracing.current().close();
 	}
 
 	@Test
-	public void notTraced() throws Exception {
+    void notTraced() throws Exception {
 		this.request = get("/favicon.ico").accept(MediaType.ALL)
 				.buildRequest(new MockServletContext());
 
@@ -128,9 +128,9 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void startsNewTrace() throws Exception {
+    void startsNewTrace() throws Exception {
 		filter.doFilter(this.request, this.response, this.filterChain);
-		
+
 		then(this.reporter.getSpans())
 				.hasSize(1);
 		then(this.reporter.getSpans().get(0).tags())
@@ -143,7 +143,7 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void shouldNotStoreHttpStatusCodeWhenResponseCodeHasNotYetBeenSet() throws Exception {
+    void shouldNotStoreHttpStatusCodeWhenResponseCodeHasNotYetBeenSet() throws Exception {
 		this.response.setStatus(0);
 		filter.doFilter(this.request, this.response, this.filterChain);
 
@@ -155,13 +155,13 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void startsNewTraceWithParentIdInHeaders() throws Exception {
+    void startsNewTraceWithParentIdInHeaders() throws Exception {
 		this.request = builder()
 				.header(SPAN_ID_NAME, PARENT_ID)
 				.header(TRACE_ID_NAME, SpanUtil.idToHex(2L))
 				.header(PARENT_SPAN_ID_NAME, SpanUtil.idToHex(3L))
 				.buildRequest(new MockServletContext());
-		
+
 		filter.doFilter(this.request, this.response, this.filterChain);
 
 		then(Tracing.current().tracer().currentSpan()).isNull();
@@ -176,7 +176,7 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void continuesATraceWhenSpanNotSampled() throws Exception {
+    void continuesATraceWhenSpanNotSampled() throws Exception {
 		AtomicReference<Span> span = new AtomicReference<>();
 		this.request = builder()
 				.header(SPAN_ID_NAME, PARENT_ID)
@@ -184,7 +184,7 @@ public class TraceFilterTests {
 				.header(PARENT_SPAN_ID_NAME, SpanUtil.idToHex(3L))
 				.header(SAMPLED_ID_NAME, 0)
 				.buildRequest(new MockServletContext());
-		
+
 		filter.doFilter(this.request, this.response, (req, resp) -> {
 			this.filterChain.doFilter(req, resp);
 			span.set(this.tracing.tracer().currentSpan());
@@ -196,7 +196,7 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void continuesSpanInRequestAttr() throws Exception {
+    void continuesSpanInRequestAttr() throws Exception {
 		Span span = this.tracer.nextSpan().name("http:foo");
 
 		filter.doFilter(this.request, this.response, this.filterChain);
@@ -205,7 +205,7 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void closesSpanInRequestAttrIfStatusCodeNotSuccessful() throws Exception {
+    void closesSpanInRequestAttrIfStatusCodeNotSuccessful() throws Exception {
 		Span span = this.tracer.nextSpan().name("http:foo");
 		this.response.setStatus(404);
 
@@ -217,7 +217,7 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void doesntDetachASpanIfStatusCodeNotSuccessfulAndRequestWasProcessed() throws Exception {
+    void doesntDetachASpanIfStatusCodeNotSuccessfulAndRequestWasProcessed() throws Exception {
 		Span span = this.tracer.nextSpan().name("http:foo");
 		this.response.setStatus(404);
 
@@ -226,7 +226,7 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void continuesSpanFromHeaders() throws Exception {
+    void continuesSpanFromHeaders() throws Exception {
 		this.request = builder().header(SPAN_ID_NAME, PARENT_ID)
 				.header(TRACE_ID_NAME, SpanUtil.idToHex(20L))
 				.buildRequest(new MockServletContext());
@@ -238,7 +238,7 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void createsChildFromHeadersWhenJoinUnsupported() throws Exception {
+    void createsChildFromHeadersWhenJoinUnsupported() throws Exception {
 		Tracing tracing = Tracing.newBuilder()
 				.currentTraceContext(ThreadLocalCurrentTraceContext.newBuilder()
 						.addScopeDecorator(StrictScopeDecorator.create())
@@ -261,12 +261,12 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void addsAdditionalHeaders() throws Exception {
+    void addsAdditionalHeaders() throws Exception {
 		this.request = builder().header(SPAN_ID_NAME, PARENT_ID)
 				.header(TRACE_ID_NAME, SpanUtil.idToHex(20L))
 				.buildRequest(new MockServletContext());
 		this.traceKeys.getHttp().getHeaders().add("x-foo");
-				this.request.addHeader("X-Foo", "bar");
+        this.request.addHeader("X-Foo", "bar");
 
 		filter.doFilter(this.request, this.response, this.filterChain);
 
@@ -278,7 +278,7 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void additionalMultiValuedHeader() throws Exception {
+    void additionalMultiValuedHeader() throws Exception {
 		this.request = builder().header(SPAN_ID_NAME, PARENT_ID)
 				.header(TRACE_ID_NAME, SpanUtil.idToHex(20L))
 				.buildRequest(new MockServletContext());
@@ -296,7 +296,7 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void shouldAnnotateSpanWithErrorWhenExceptionIsThrown() throws Exception {
+    void shouldAnnotateSpanWithErrorWhenExceptionIsThrown() throws Exception {
 		this.request = builder().header(SPAN_ID_NAME, PARENT_ID)
 				.header(TRACE_ID_NAME, SpanUtil.idToHex(20L))
 				.buildRequest(new MockServletContext());
@@ -305,16 +305,16 @@ public class TraceFilterTests {
 			@Override
 			public void doFilter(javax.servlet.ServletRequest request,
 					javax.servlet.ServletResponse response)
-							throws java.io.IOException, javax.servlet.ServletException {
+                    throws java.io.IOException, javax.servlet.ServletException {
 				throw new RuntimeException("Planned");
 			}
 		};
 		try {
 			filter.doFilter(this.request, this.response, this.filterChain);
 		}
-		catch (RuntimeException e) {
-			assertEquals("Planned", e.getMessage());
-		}
+                catch (RuntimeException e) {
+                    assertEquals("Planned", e.getMessage());
+                }
 
 		then(Tracing.current().tracer().currentSpan()).isNull();
 		verifyParentSpanHttpTags(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -325,7 +325,7 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void detachesSpanWhenResponseStatusIsNot2xx() throws Exception {
+    void detachesSpanWhenResponseStatusIsNot2xx() throws Exception {
 		this.request = builder().header(SPAN_ID_NAME, PARENT_ID)
 				.header(TRACE_ID_NAME, SpanUtil.idToHex(20L))
 				.buildRequest(new MockServletContext());
@@ -337,7 +337,7 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void closesSpanWhenResponseStatusIs2xx() throws Exception {
+    void closesSpanWhenResponseStatusIs2xx() throws Exception {
 		this.request = builder().header(SPAN_ID_NAME, PARENT_ID)
 				.header(TRACE_ID_NAME, SpanUtil.idToHex(20L))
 				.buildRequest(new MockServletContext());
@@ -351,7 +351,7 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void closesSpanWhenResponseStatusIs3xx() throws Exception {
+    void closesSpanWhenResponseStatusIs3xx() throws Exception {
 		this.request = builder().header(SPAN_ID_NAME, PARENT_ID)
 				.header(TRACE_ID_NAME, SpanUtil.idToHex(20L))
 				.buildRequest(new MockServletContext());
@@ -365,7 +365,7 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void returns400IfSpanIsMalformedAndCreatesANewSpan() throws Exception {
+    void returns400IfSpanIsMalformedAndCreatesANewSpan() throws Exception {
 		this.request = builder().header(SPAN_ID_NAME, "asd")
 				.header(TRACE_ID_NAME, SpanUtil.idToHex(20L))
 				.buildRequest(new MockServletContext());
@@ -378,7 +378,7 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void returns200IfSpanParentIsMalformedAndCreatesANewSpan() throws Exception {
+    void returns200IfSpanParentIsMalformedAndCreatesANewSpan() throws Exception {
 		this.request = builder().header(SPAN_ID_NAME, PARENT_ID)
 				.header(PARENT_SPAN_ID_NAME, "-")
 				.header(TRACE_ID_NAME, SpanUtil.idToHex(20L))
@@ -392,7 +392,7 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void samplesASpanRegardlessOfTheSamplerWhenXB3FlagsIsPresentAndSetTo1() throws Exception {
+    void samplesASpanRegardlessOfTheSamplerWhenXB3FlagsIsPresentAndSetTo1() throws Exception {
 		this.request = builder()
 				.header(SPAN_FLAGS, 1)
 				.buildRequest(new MockServletContext());
@@ -404,7 +404,7 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void doesNotOverrideTheSampledFlagWhenXB3FlagIsSetToOtherValueThan1() throws Exception {
+    void doesNotOverrideTheSampledFlagWhenXB3FlagIsSetToOtherValueThan1() throws Exception {
 		this.request = builder()
 				.header(SPAN_FLAGS, 0)
 				.buildRequest(new MockServletContext());
@@ -417,7 +417,7 @@ public class TraceFilterTests {
 
 	@SuppressWarnings("Duplicates")
 	@Test
-	public void samplesWhenDebugFlagIsSetTo1AndOnlySpanIdIsSet() throws Exception {
+    void samplesWhenDebugFlagIsSetTo1AndOnlySpanIdIsSet() throws Exception {
 		this.request = builder()
 				.header(SPAN_FLAGS, 1)
 				.header(SPAN_ID_NAME, SpanUtil.idToHex(10L))
@@ -434,7 +434,7 @@ public class TraceFilterTests {
 
 	@SuppressWarnings("Duplicates")
 	@Test
-	public void usesSamplingMechanismWhenIncomingTraceIsMalformed() throws Exception {
+    void usesSamplingMechanismWhenIncomingTraceIsMalformed() throws Exception {
 		this.request = builder()
 				.header(SPAN_FLAGS, 1)
 				.header(TRACE_ID_NAME, SpanUtil.idToHex(10L))
@@ -448,7 +448,7 @@ public class TraceFilterTests {
 
 	// #668
 	@Test
-	public void shouldSetTraceKeysForAnUntracedRequest() throws Exception {
+    void shouldSetTraceKeysForAnUntracedRequest() throws Exception {
 		this.request = builder()
 				.param("foo", "bar")
 				.buildRequest(new MockServletContext());
@@ -469,7 +469,7 @@ public class TraceFilterTests {
 	}
 
 	@Test
-	public void samplesASpanDebugFlagWithInterceptor() throws Exception {
+    void samplesASpanDebugFlagWithInterceptor() throws Exception {
 		this.request = builder()
 				.header(SPAN_FLAGS, 1)
 				.buildRequest(new MockServletContext());

@@ -16,21 +16,20 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client.feign;
 
-import java.io.IOException;
-
 import brave.Tracing;
 import brave.http.HttpTracing;
 import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
 import feign.Client;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cloud.sleuth.instrument.web.SleuthHttpParserAccessor;
+
+import java.io.IOException;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -55,36 +54,37 @@ public class TraceFeignAspectTests {
 			.clientParser(SleuthHttpParserAccessor.getClient())
 			.build();
 	TraceFeignAspect traceFeignAspect;
-	
-	@Before
-	public void setup() {
+
+	@BeforeEach
+    void setup() {
 		this.traceFeignAspect = new TraceFeignAspect(this.beanFactory) {
-			@Override Object executeTraceFeignClient(Object bean, ProceedingJoinPoint pjp) throws IOException {
+			@Override
+            Object executeTraceFeignClient(Object bean, ProceedingJoinPoint pjp) throws IOException {
 				return null;
 			}
 		};
 	}
 
-	@Test 
-	public void should_wrap_feign_client_in_trace_representation() throws Throwable {
+	@Test
+    void should_wrap_feign_client_in_trace_representation() throws Throwable {
 		given(this.pjp.getTarget()).willReturn(this.client);
 
 		this.traceFeignAspect.feignClientWasCalled(this.pjp);
 
 		verify(this.pjp, never()).proceed();
 	}
-	
-	@Test 
-	public void should_not_wrap_traced_feign_client_in_trace_representation() throws Throwable {
+
+	@Test
+    void should_not_wrap_traced_feign_client_in_trace_representation() throws Throwable {
 		given(this.pjp.getTarget()).willReturn(new TracingFeignClient(this.httpTracing, this.client));
 
 		this.traceFeignAspect.feignClientWasCalled(this.pjp);
 
 		verify(this.pjp).proceed();
 	}
-	
-	@Test 
-	public void should_not_wrap_traced_load_balancer_feign_client_in_trace_representation() throws Throwable {
+
+	@Test
+    void should_not_wrap_traced_load_balancer_feign_client_in_trace_representation() throws Throwable {
 		given(this.pjp.getTarget()).willReturn(this.traceLoadBalancerFeignClient);
 
 		this.traceFeignAspect.feignClientWasCalled(this.pjp);

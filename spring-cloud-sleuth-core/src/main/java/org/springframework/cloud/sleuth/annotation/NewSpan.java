@@ -38,7 +38,7 @@ import org.springframework.core.annotation.AliasFor;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Target(value = { ElementType.METHOD })
+@Target(value = {ElementType.METHOD})
 public @interface NewSpan {
 
 	/**

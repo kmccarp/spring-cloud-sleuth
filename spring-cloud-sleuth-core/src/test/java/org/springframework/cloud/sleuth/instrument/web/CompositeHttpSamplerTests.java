@@ -18,9 +18,8 @@ package org.springframework.cloud.sleuth.instrument.web;
 
 import brave.http.HttpAdapter;
 import brave.http.HttpSampler;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -35,13 +34,13 @@ public class CompositeHttpSamplerTests {
 	HttpSampler sampler;
 	Object request = new Object();
 
-	@Before
-	public void init(){
+	@BeforeEach
+    void init() {
 		this.sampler = new CompositeHttpSampler(left, right);
 	}
 
 	@Test
-	public void should_return_null_on_both_null() {
+    void should_return_null_on_both_null() {
 		given(this.left.trySample(this.adapter, this.request)).willReturn(null);
 		given(this.right.trySample(this.adapter, this.request)).willReturn(null);
 
@@ -49,7 +48,7 @@ public class CompositeHttpSamplerTests {
 	}
 
 	@Test
-	public void should_return_false_on_any_false() {
+    void should_return_false_on_any_false() {
 		given(this.left.trySample(this.adapter, this.request)).willReturn(false);
 		given(this.right.trySample(this.adapter, this.request)).willReturn(null);
 
@@ -72,7 +71,7 @@ public class CompositeHttpSamplerTests {
 	}
 
 	@Test
-	public void should_return_true_on_both_true() {
+    void should_return_true_on_both_true() {
 		given(this.left.trySample(this.adapter, this.request)).willReturn(true);
 		given(this.right.trySample(this.adapter, this.request)).willReturn(true);
 

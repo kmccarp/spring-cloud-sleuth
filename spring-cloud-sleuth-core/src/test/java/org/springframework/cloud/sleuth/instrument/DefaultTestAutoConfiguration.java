@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@EnableAutoConfiguration(exclude = { LoadBalancerAutoConfiguration.class,
+@EnableAutoConfiguration(exclude = {LoadBalancerAutoConfiguration.class,
 		JmxAutoConfiguration.class})
 //		,TraceSpringIntegrationAutoConfiguration.class,
 //		TraceWebSocketAutoConfiguration.class })

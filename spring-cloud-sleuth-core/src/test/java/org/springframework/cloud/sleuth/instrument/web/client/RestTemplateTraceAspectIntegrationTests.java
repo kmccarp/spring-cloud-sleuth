@@ -16,19 +16,12 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client;
 
-import java.util.Collections;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-
 import brave.Tracing;
 import brave.sampler.Sampler;
 import brave.spring.web.TracingAsyncClientHttpRequestInterceptor;
-import zipkin2.Span;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.sleuth.instrument.DefaultTestAutoConfiguration;
@@ -51,6 +44,12 @@ import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.async.WebAsyncTask;
+import zipkin2.Span;
+
+import java.util.Collections;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,7 +61,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = RestTemplateTraceAspectIntegrationTests.Config.class,
-		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) @DirtiesContext
+		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext
 public class RestTemplateTraceAspectIntegrationTests {
 
 	@Autowired WebApplicationContext context;
@@ -72,16 +72,20 @@ public class RestTemplateTraceAspectIntegrationTests {
 
 	private MockMvc mockMvc;
 
-	@Before public void init() {
+	@BeforeEach
+    void init() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 		this.controller.reset();
 	}
 
-	@Before @After public void verify() {
+	@BeforeEach
+    @AfterEach
+    void verify() {
 		then(this.tracer.tracer().currentSpan()).isNull();
 	}
 
-	@Test public void should_set_span_data_on_headers_via_aspect_in_synchronous_call()
+	@Test
+    void should_set_span_data_on_headers_via_aspect_in_synchronous_call()
 			throws Exception {
 		whenARequestIsSentToASyncEndpoint();
 
@@ -90,7 +94,7 @@ public class RestTemplateTraceAspectIntegrationTests {
 	}
 
 	@Test
-	public void should_set_span_data_on_headers_when_sending_a_request_via_async_rest_template()
+    void should_set_span_data_on_headers_when_sending_a_request_via_async_rest_template()
 			throws Exception {
 		whenARequestIsSentToAnAsyncRestTemplateEndpoint();
 
@@ -99,7 +103,7 @@ public class RestTemplateTraceAspectIntegrationTests {
 	}
 
 	@Test
-	public void should_set_span_data_on_headers_via_aspect_in_asynchronous_callable()
+    void should_set_span_data_on_headers_via_aspect_in_asynchronous_callable()
 			throws Exception {
 		whenARequestIsSentToAnAsyncEndpoint("/callablePing");
 
@@ -108,7 +112,7 @@ public class RestTemplateTraceAspectIntegrationTests {
 	}
 
 	@Test
-	public void should_set_span_data_on_headers_via_aspect_in_asynchronous_web_async()
+    void should_set_span_data_on_headers_via_aspect_in_asynchronous_web_async()
 			throws Exception {
 		whenARequestIsSentToAnAsyncEndpoint("/webAsyncTaskPing");
 

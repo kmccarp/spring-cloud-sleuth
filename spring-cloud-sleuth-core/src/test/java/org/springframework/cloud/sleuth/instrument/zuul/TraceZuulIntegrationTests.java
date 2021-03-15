@@ -16,29 +16,23 @@
 
 package org.springframework.cloud.sleuth.instrument.zuul;
 
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import brave.Span;
 import brave.Tracer;
 import brave.Tracing;
 import brave.sampler.Sampler;
+import com.netflix.loadbalancer.Server;
+import com.netflix.loadbalancer.ServerList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.assertj.core.api.BDDAssertions;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.netflix.ribbon.RibbonClient;
 import org.springframework.cloud.netflix.ribbon.StaticServerList;
@@ -46,6 +40,7 @@ import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.cloud.netflix.zuul.filters.RouteLocator;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.cloud.netflix.zuul.filters.discovery.DiscoveryClientRouteLocator;
+import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpEntity;
@@ -61,8 +56,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.ServerList;
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -71,7 +69,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SampleZuulProxyApplication.class, properties = {
-		"zuul.routes.simple: /simple/**" }, webEnvironment = WebEnvironment.RANDOM_PORT)
+		"zuul.routes.simple: /simple/**"}, webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 public class TraceZuulIntegrationTests {
 
@@ -86,14 +84,14 @@ public class TraceZuulIntegrationTests {
 	@Autowired
 	RestTemplate restTemplate;
 
-	@Before
-	@After
-	public void cleanup() {
+	@BeforeEach
+	@AfterEach
+    void cleanup() {
 		this.spanAccumulator.clear();
 	}
 
 	@Test
-	public void should_close_span_when_routing_to_service_via_discovery() {
+    void should_close_span_when_routing_to_service_via_discovery() {
 		Span span = this.tracing.tracer().nextSpan().name("foo").start();
 
 		try (Tracer.SpanInScope ws = this.tracing.tracer().withSpanInScope(span)) {
@@ -118,7 +116,7 @@ public class TraceZuulIntegrationTests {
 	}
 
 	@Test
-	public void should_close_span_when_routing_to_service_via_discovery_to_a_non_existent_url() {
+    void should_close_span_when_routing_to_service_via_discovery_to_a_non_existent_url() {
 		Span span = this.tracing.tracer().nextSpan().name("foo").start();
 
 		try (Tracer.SpanInScope ws = this.tracing.tracer().withSpanInScope(span)) {

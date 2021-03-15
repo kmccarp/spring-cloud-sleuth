@@ -20,8 +20,8 @@ import brave.Span;
 import brave.Tracer;
 import brave.sampler.Sampler;
 import org.awaitility.Awaitility;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -51,19 +51,20 @@ public class TraceWebFluxTests {
 
 	public static final String EXPECTED_TRACE_ID = "b919095138aa4c6e";
 
-	@BeforeClass
-	public static void setup() {
+	@BeforeAll
+    static void setup() {
 		Hooks.resetOnLastOperator();
 		Schedulers.resetFactory();
 	}
 
-	@Test public void should_instrument_web_filter() throws Exception {
+	@Test
+    void should_instrument_web_filter() throws Exception {
 		// setup
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				TraceWebFluxTests.Config.class).web(WebApplicationType.REACTIVE)
 				.properties("server.port=0", "spring.jmx.enabled=false", "spring.sleuth.web.skipPattern=/skipped",
 						"spring.application.name=TraceWebFluxTests", "security.basic.enabled=false",
-								"management.security.enabled=false").run();
+                        "management.security.enabled=false").run();
 		ArrayListSpanReporter accumulator = context.getBean(ArrayListSpanReporter.class);
 		int port = context.getBean(Environment.class).getProperty("local.server.port", Integer.class);
 		Controller2 controller2 = context.getBean(Controller2.class);

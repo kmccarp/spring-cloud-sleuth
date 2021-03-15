@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Scope;
  */
 @Configuration
 @ConditionalOnProperty(value = "spring.sleuth.feign.enabled", matchIfMissing = true)
-@ConditionalOnClass({ Client.class, FeignContext.class })
+@ConditionalOnClass({Client.class, FeignContext.class})
 @ConditionalOnBean(HttpTracing.class)
 @AutoConfigureBefore(FeignAutoConfiguration.class)
 @AutoConfigureAfter({SleuthHystrixAutoConfiguration.class, TraceHttpAutoConfiguration.class})

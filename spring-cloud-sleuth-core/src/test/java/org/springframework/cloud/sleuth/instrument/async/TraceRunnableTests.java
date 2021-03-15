@@ -16,22 +16,21 @@
 
 package org.springframework.cloud.sleuth.instrument.async;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicReference;
-
 import brave.Span;
 import brave.Tracer;
 import brave.Tracing;
 import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.sleuth.DefaultSpanNamer;
 import org.springframework.cloud.sleuth.SpanName;
 import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -48,15 +47,15 @@ public class TraceRunnableTests {
 			.build();
 	Tracer tracer = this.tracing.tracer();
 
-	@After
-	public void clean() {
+	@AfterEach
+    void clean() {
 		this.tracing.close();
 		this.reporter.clear();
 		this.executor.shutdown();
 	}
 
 	@Test
-	public void should_remove_span_from_thread_local_after_finishing_work()
+    void should_remove_span_from_thread_local_after_finishing_work()
 			throws Exception {
 		// given
 		TraceKeepingRunnable traceKeepingRunnable = runnableThatRetrievesTraceFromThreadLocal();
@@ -78,7 +77,7 @@ public class TraceRunnableTests {
 	}
 
 	@Test
-	public void should_not_find_thread_local_in_non_traceable_callback()
+    void should_not_find_thread_local_in_non_traceable_callback()
 			throws Exception {
 		// given
 		TraceKeepingRunnable traceKeepingRunnable = runnableThatRetrievesTraceFromThreadLocal();
@@ -95,7 +94,7 @@ public class TraceRunnableTests {
 	}
 
 	@Test
-	public void should_take_name_of_span_from_span_name_annotation()
+    void should_take_name_of_span_from_span_name_annotation()
 			throws Exception {
 		TraceKeepingRunnable traceKeepingRunnable = runnableThatRetrievesTraceFromThreadLocal();
 
@@ -106,7 +105,7 @@ public class TraceRunnableTests {
 	}
 
 	@Test
-	public void should_take_name_of_span_from_to_string_if_span_name_annotation_is_missing()
+    void should_take_name_of_span_from_to_string_if_span_name_annotation_is_missing()
 			throws Exception {
 		final AtomicReference<Span> span = new AtomicReference<>();
 		Runnable runnable = runnableWithCustomToString(span);

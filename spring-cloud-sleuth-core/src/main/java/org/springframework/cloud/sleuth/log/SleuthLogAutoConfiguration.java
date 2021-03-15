@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnProperty(value="spring.sleuth.enabled", matchIfMissing=true)
+@ConditionalOnProperty(value = "spring.sleuth.enabled", matchIfMissing = true)
 @AutoConfigureBefore(TraceAutoConfiguration.class)
 public class SleuthLogAutoConfiguration {
 

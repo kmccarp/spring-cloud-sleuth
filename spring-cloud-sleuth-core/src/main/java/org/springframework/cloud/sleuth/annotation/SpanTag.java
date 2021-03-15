@@ -39,7 +39,7 @@ import org.springframework.core.annotation.AliasFor;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Target(value = { ElementType.PARAMETER })
+@Target(value = {ElementType.PARAMETER})
 public @interface SpanTag {
 
 	/**

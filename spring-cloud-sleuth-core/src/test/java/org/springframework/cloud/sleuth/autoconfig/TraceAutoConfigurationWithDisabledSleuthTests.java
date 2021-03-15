@@ -15,15 +15,11 @@
  */
 package org.springframework.cloud.sleuth.autoconfig;
 
-import java.security.SecureRandom;
-
 import brave.Tracing;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.assertj.core.api.BDDAssertions;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -34,9 +30,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.security.SecureRandom;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = TraceAutoConfigurationWithDisabledSleuthTests.Config.class,
-				properties = "spring.sleuth.enabled=false",
+        properties = "spring.sleuth.enabled=false",
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("disabled")
 public class TraceAutoConfigurationWithDisabledSleuthTests {
@@ -48,12 +46,12 @@ public class TraceAutoConfigurationWithDisabledSleuthTests {
 	@Autowired(required = false) Tracing tracing;
 
 	@Test
-	public void shouldStartContext() {
+    void shouldStartContext() {
 		BDDAssertions.then(this.tracing).isNull();
 	}
 
 	@Test
-	public void shouldNotContainAnyTracingInfoInTheLogs() {
+    void shouldNotContainAnyTracingInfoInTheLogs() {
 		log.info("hello");
 
 		BDDAssertions.then(this.capture.toString()).doesNotContain("[foo");

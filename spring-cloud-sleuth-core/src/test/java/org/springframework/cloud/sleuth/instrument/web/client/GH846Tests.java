@@ -16,11 +16,7 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client;
 
-import javax.annotation.PostConstruct;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,17 +27,21 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
-@SpringBootTest(classes = GH846Tests.App.class, webEnvironment=WebEnvironment.NONE)
+import javax.annotation.PostConstruct;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@SpringBootTest(classes = GH846Tests.App.class, webEnvironment = WebEnvironment.NONE)
 @RunWith(SpringRunner.class)
 public class GH846Tests {
 
 	@Autowired
 	private MyBean myBean;
-	
+
 	@Test
-	public void doit() throws Exception {
+    void doit() throws Exception {
 		int count = myBean.listAndCount();
-		Assert.assertEquals("Change detected in RestTemplate interceptor *after* @PostConstruct", count, myBean.getCountAtPostConstruct());
+		assertEquals(count, myBean.getCountAtPostConstruct(), "Change detected in RestTemplate interceptor *after* @PostConstruct");
 	}
 	
 	@EnableAutoConfiguration

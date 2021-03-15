@@ -16,13 +16,10 @@
 
 package org.springframework.cloud.sleuth.instrument.async.issues.issue546;
 
-import java.lang.invoke.MethodHandles;
-
 import brave.Tracing;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -38,6 +35,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 
+import java.lang.invoke.MethodHandles;
+
 import static org.assertj.core.api.BDDAssertions.then;
 
 /**
@@ -52,7 +51,7 @@ public class Issue546Tests {
 	@Autowired Environment environment;
 
 	@Test
-	public void should_pass_tracing_info_when_using_callbacks() {
+    void should_pass_tracing_info_when_using_callbacks() {
 		new RestTemplate()
 				.getForObject("http://localhost:" + port() + "/trace-async-rest-template",
 						String.class);

@@ -16,19 +16,17 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client;
 
-import java.net.URI;
-
 import brave.propagation.Propagation;
 import org.assertj.core.api.BDDAssertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.net.URI;
 
 /**
  * @author Marcin Grzejszczak
@@ -40,7 +38,7 @@ public class TraceWebClientBeanPostProcessorTest {
 	BeanFactory beanFactory;
 
 	@Test
-	public void should_add_filter_only_once_to_web_client() {
+    void should_add_filter_only_once_to_web_client() {
 		TraceWebClientBeanPostProcessor processor = new TraceWebClientBeanPostProcessor(this.beanFactory);
 		WebClient client = WebClient.create();
 
@@ -55,7 +53,7 @@ public class TraceWebClientBeanPostProcessorTest {
 	}
 
 	@Test
-	public void should_add_filter_only_once_to_web_client_via_builder() {
+    void should_add_filter_only_once_to_web_client_via_builder() {
 		TraceWebClientBeanPostProcessor processor = new TraceWebClientBeanPostProcessor(this.beanFactory);
 		WebClient.Builder builder = WebClient.builder();
 

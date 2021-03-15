@@ -16,17 +16,16 @@
 
 package org.springframework.cloud.sleuth.instrument.web;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import brave.SpanCustomizer;
+import brave.http.HttpClientAdapter;
+import org.junit.jupiter.api.Test;
 
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
-import brave.SpanCustomizer;
-import brave.http.HttpClientAdapter;
+import static org.assertj.core.api.BDDAssertions.then;
 
 /**
  * Test case for HttpTraceKeysInjector
@@ -39,21 +38,24 @@ public class SleuthHttpClientParserTests {
 	private SleuthHttpClientParser parser = new SleuthHttpClientParser(this.traceKeys);
 
 	@Test
-	public void should_set_tags_on_span_with_proper_header_values() throws Exception {
+    void should_set_tags_on_span_with_proper_header_values() throws Exception {
 		this.traceKeys.getHttp().setHeaders(Arrays.asList("Accept", "User-Agent", "Content-Type"));
 
 		this.parser.request(new HttpClientAdapter<Object, Object>() {
 			private final URL url = new URL("http://localhost:8080/");
 
-			@Override public String method(Object request) {
+			@Override
+            public String method(Object request) {
 				return "GET";
 			}
 
-			@Override public String url(Object request) {
+			@Override
+            public String url(Object request) {
 				return url.toString();
 			}
 
-			@Override public String requestHeader(Object request, String name) {
+			@Override
+            public String requestHeader(Object request, String name) {
 				if (name.equals("Accept")) {
 					return "'text/plain','text/xml'";
 				} else if (name.equals("User-Agent")) {
@@ -62,15 +64,16 @@ public class SleuthHttpClientParserTests {
 				return null;
 			}
 
-			@Override public Integer statusCode(Object response) {
+			@Override
+            public Integer statusCode(Object response) {
 				return 200;
 			}
 		}, null, this.customizer);
 
 		then(this.customizer.tags)
-			.containsEntry("http.user-agent", "Test")
-			.containsEntry("http.accept", "'text/plain','text/xml'")
-			.doesNotContainKey("http.content-type");
+                .containsEntry("http.user-agent", "Test")
+                .containsEntry("http.accept", "'text/plain','text/xml'")
+                .doesNotContainKey("http.content-type");
 	}
 }
 

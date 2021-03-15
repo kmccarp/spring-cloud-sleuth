@@ -17,8 +17,7 @@
 package org.springframework.cloud.sleuth.annotation;
 
 import brave.Tracing;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -34,7 +33,7 @@ public class SleuthNewSpanParserAnnotationNoSleuthTests {
 	@Autowired(required = false) Tracing tracing;
 
 	@Test
-	public void shouldNotAutowireBecauseConfigIsDisabled() {
+    void shouldNotAutowireBecauseConfigIsDisabled() {
 		assertThat(this.newSpanParser).isNull();
 		assertThat(this.tracing).isNull();
 	}

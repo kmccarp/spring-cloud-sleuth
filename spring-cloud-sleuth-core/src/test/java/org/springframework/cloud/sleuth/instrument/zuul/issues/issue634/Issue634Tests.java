@@ -16,28 +16,26 @@
 
 package org.springframework.cloud.sleuth.instrument.zuul.issues.issue634;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import brave.Tracing;
 import brave.http.HttpTracing;
 import brave.sampler.Sampler;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.netflix.zuul.ZuulFilter;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
+import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.netflix.zuul.ZuulFilter;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -56,7 +54,7 @@ public class Issue634Tests {
 	@Autowired ArrayListSpanReporter reporter;
 
 	@Test
-	public void should_reuse_custom_feign_client() {
+    void should_reuse_custom_feign_client() {
 		for (int i = 0; i < 15; i++) {
 			new TestRestTemplate()
 					.getForEntity("http://localhost:" + this.port + "/display/ddd",

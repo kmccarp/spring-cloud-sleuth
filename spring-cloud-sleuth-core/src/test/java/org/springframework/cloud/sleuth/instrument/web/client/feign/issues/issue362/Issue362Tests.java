@@ -16,35 +16,19 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client.feign.issues.issue362;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-
 import brave.Tracing;
 import brave.sampler.Sampler;
-import feign.Client;
-import feign.Logger;
-import feign.Request;
-import feign.Response;
-import feign.RetryableException;
-import feign.Retryer;
+import feign.*;
 import feign.codec.ErrorDecoder;
-import zipkin2.Span;
-import zipkin2.reporter.Reporter;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.sleuth.instrument.web.TraceWebServletAutoConfiguration;
-import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.sleuth.instrument.web.TraceWebServletAutoConfiguration;
+import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -55,6 +39,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import zipkin2.Span;
+import zipkin2.reporter.Reporter;
+
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.BDDAssertions.then;
@@ -74,14 +68,14 @@ public class Issue362Tests {
 	@Autowired Tracing tracer;
 	@Autowired ArrayListSpanReporter reporter;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		this.feignComponentAsserter.executedComponents.clear();
 		this.reporter.clear();
 	}
 
 	@Test
-	public void should_successfully_work_with_custom_error_decoder_when_sending_successful_request() {
+    void should_successfully_work_with_custom_error_decoder_when_sending_successful_request() {
 		String securedURl = "http://localhost:9998/sleuth/test-ok";
 
 		ResponseEntity<String> response = this.template.getForEntity(securedURl, String.class);
@@ -94,13 +88,14 @@ public class Issue362Tests {
 	}
 
 	@Test
-	public void should_successfully_work_with_custom_error_decoder_when_sending_failing_request() {
+    void should_successfully_work_with_custom_error_decoder_when_sending_failing_request() {
 		String securedURl = "http://localhost:9998/sleuth/test-not-ok";
 
 		try {
 			this.template.getForEntity(securedURl, String.class);
 			fail("should propagate an exception");
-		} catch (Exception e) { }
+		} catch (Exception e) {
+        }
 
 		then(this.feignComponentAsserter.executedComponents)
 				.containsEntry(ErrorDecoder.class, true)

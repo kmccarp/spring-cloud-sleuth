@@ -16,18 +16,18 @@
 
 package org.springframework.cloud.sleuth.zipkin2.sender;
 
-import java.util.stream.Stream;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestTemplate;
 import zipkin2.Call;
 import zipkin2.Endpoint;
 import zipkin2.Span;
 import zipkin2.codec.Encoding;
 import zipkin2.codec.SpanBytesEncoder;
+
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,30 +58,32 @@ public class RestTemplateSenderTest {
   String endpoint = server.url("/api/v2/spans").toString();
   RestTemplateSender sender = new RestTemplateSender(new RestTemplate(), endpoint, JSON_V2);
 
-  /** Tests that json is not manipulated as a side-effect of using rest template. */
-  @Test public void jsonIsNormal() throws Exception {
-    server.enqueue(new MockResponse());
+    /** Tests that json is not manipulated as a side-effect of using rest template. */
+    @Test
+    void jsonIsNormal() throws Exception {
+        server.enqueue(new MockResponse());
 
-    send(SPAN).execute();
+        send(SPAN).execute();
 
-    assertThat(server.takeRequest().getBody().readUtf8())
-        .isEqualTo("[" + new String(JSON_V2.encode(SPAN), "UTF-8") + "]");
-  }
+        assertThat(server.takeRequest().getBody().readUtf8())
+                .isEqualTo("[" + new String(JSON_V2.encode(SPAN), "UTF-8") + "]");
+    }
 
-  @Test public void proto3() throws Exception {
-    server.enqueue(new MockResponse());
-    sender = new RestTemplateSender(new RestTemplate(), endpoint, PROTO3);
+    @Test
+    void proto3() throws Exception {
+        server.enqueue(new MockResponse());
+        sender = new RestTemplateSender(new RestTemplate(), endpoint, PROTO3);
 
-    send(SPAN).execute();
+        send(SPAN).execute();
 
-    RecordedRequest request = server.takeRequest();
-    assertThat(request.getHeader("Content-Type"))
-        .isEqualTo("application/x-protobuf");
+        RecordedRequest request = server.takeRequest();
+        assertThat(request.getHeader("Content-Type"))
+                .isEqualTo("application/x-protobuf");
 
-    // proto3 encoding of ListOfSpan is simply a repeated span entry
-    assertThat(request.getBody().readByteArray())
-        .containsExactly(SpanBytesEncoder.PROTO3.encode(SPAN));
-  }
+        // proto3 encoding of ListOfSpan is simply a repeated span entry
+        assertThat(request.getBody().readByteArray())
+                .containsExactly(SpanBytesEncoder.PROTO3.encode(SPAN));
+    }
 
   Call<Void> send(Span... spans) {
     SpanBytesEncoder bytesEncoder = sender.encoding() == Encoding.JSON

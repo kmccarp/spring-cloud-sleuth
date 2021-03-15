@@ -16,27 +16,15 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client.feign;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import brave.Tracing;
 import brave.http.HttpTracing;
 import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
-import feign.Client;
-import feign.Feign;
-import feign.FeignException;
-import feign.Request;
-import feign.RequestLine;
-import feign.Response;
+import feign.*;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -44,6 +32,11 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cloud.sleuth.instrument.web.SleuthHttpParserAccessor;
 import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import zipkin2.Span;
+
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.assertj.core.api.BDDAssertions.then;
@@ -70,14 +63,14 @@ public class FeignRetriesTests {
 			.clientParser(SleuthHttpParserAccessor.getClient())
 			.build();
 
-	@Before
-	@After
-	public void setup() {
+	@BeforeEach
+	@AfterEach
+    void setup() {
 		BDDMockito.given(this.beanFactory.getBean(HttpTracing.class)).willReturn(this.httpTracing);
 	}
 
 	@Test
-	public void testRetriedWhenExceededNumberOfRetries() throws Exception {
+    void testRetriedWhenExceededNumberOfRetries() throws Exception {
 		Client client = (request, options) -> {
 			throw new IOException();
 		};
@@ -91,11 +84,12 @@ public class FeignRetriesTests {
 		try {
 			api.decodedPost();
 			failBecauseExceptionWasNotThrown(FeignException.class);
-		} catch (FeignException e) { }
+		} catch (FeignException e) {
+        }
 	}
 
 	@Test
-	public void testRetriedWhenRequestEventuallyIsSent() throws Exception {
+    void testRetriedWhenRequestEventuallyIsSent() throws Exception {
 		String url = "http://localhost:" + server.getPort();
 		final AtomicInteger atomicInteger = new AtomicInteger();
 		// Client to simulate a retry scenario
@@ -116,7 +110,8 @@ public class FeignRetriesTests {
 		TestInterface api =
 				Feign.builder()
 						.client(new TracingFeignClient(this.httpTracing, new Client() {
-							@Override public Response execute(Request request,
+							@Override
+                            public Response execute(Request request,
 									Request.Options options) throws IOException {
 								atomicInteger.incrementAndGet();
 								return client.execute(request, options);

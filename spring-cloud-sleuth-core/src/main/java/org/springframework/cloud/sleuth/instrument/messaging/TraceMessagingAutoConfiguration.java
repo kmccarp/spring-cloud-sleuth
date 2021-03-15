@@ -69,7 +69,7 @@ import org.springframework.util.ReflectionUtils;
  */
 @Configuration
 @ConditionalOnBean(Tracing.class)
-@AutoConfigureAfter({ TraceAutoConfiguration.class })
+@AutoConfigureAfter({TraceAutoConfiguration.class})
 @OnMessagingEnabled
 @EnableConfigurationProperties(SleuthMessagingProperties.class)
 public class TraceMessagingAutoConfiguration {

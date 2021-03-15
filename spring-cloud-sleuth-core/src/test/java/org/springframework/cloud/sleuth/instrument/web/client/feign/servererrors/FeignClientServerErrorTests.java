@@ -16,10 +16,6 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client.feign.servererrors;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import brave.Tracer;
 import brave.Tracing;
 import brave.sampler.Sampler;
@@ -33,9 +29,8 @@ import feign.codec.ErrorDecoder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.awaitility.Awaitility;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -60,6 +55,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import zipkin2.Span;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.BDDAssertions.then;
@@ -89,14 +88,14 @@ public class FeignClientServerErrorTests {
 	@Autowired ArrayListSpanReporter reporter;
 	@Autowired Tracer tracer;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		this.reporter.clear();
 	}
 
 	@Test
-	public void shouldCloseSpanOnInternalServerError(){
-		try(Tracer.SpanInScope ws = tracer.withSpanInScope(tracer.nextSpan().name("foo").start())) {
+    void shouldCloseSpanOnInternalServerError() {
+		try (Tracer.SpanInScope ws = tracer.withSpanInScope(tracer.nextSpan().name("foo").start())) {
 			log.info("sending a request");
 			this.feignInterface.internalError();
 			fail("Must throw an exception");
@@ -117,8 +116,8 @@ public class FeignClientServerErrorTests {
 	}
 
 	@Test
-	public void shouldCloseSpanOnNotFound() {
-		try(Tracer.SpanInScope ws = tracer.withSpanInScope(tracer.nextSpan().name("foo").start())) {
+    void shouldCloseSpanOnNotFound() {
+		try (Tracer.SpanInScope ws = tracer.withSpanInScope(tracer.nextSpan().name("foo").start())) {
 			log.info("sending a request");
 			this.feignInterface.notFound();
 			fail("Must throw an exception");
@@ -138,8 +137,8 @@ public class FeignClientServerErrorTests {
 	}
 
 	@Test
-	public void shouldCloseSpanOnOk() {
-		try(Tracer.SpanInScope ws = tracer.withSpanInScope(tracer.nextSpan().name("foo").start())) {
+    void shouldCloseSpanOnOk() {
+		try (Tracer.SpanInScope ws = tracer.withSpanInScope(tracer.nextSpan().name("foo").start())) {
 			log.info("sending a request");
 			this.feignInterface.ok();
 		} catch (HystrixRuntimeException e) {
@@ -160,8 +159,8 @@ public class FeignClientServerErrorTests {
 	}
 
 	@Test
-	public void shouldCloseSpanOnOkWithCustomFeignConfiguration(){
-		try(Tracer.SpanInScope ws = tracer.withSpanInScope(tracer.nextSpan().name("foo").start())) {
+    void shouldCloseSpanOnOkWithCustomFeignConfiguration() {
+		try (Tracer.SpanInScope ws = tracer.withSpanInScope(tracer.nextSpan().name("foo").start())) {
 			log.info("sending a request");
 			this.customConfFeignInterface.ok();
 			fail("Must throw an exception");
@@ -182,8 +181,8 @@ public class FeignClientServerErrorTests {
 	}
 
 	@Test
-	public void shouldCloseSpanOnNotFoundWithCustomFeignConfiguration(){
-		try(Tracer.SpanInScope ws = tracer.withSpanInScope(tracer.nextSpan().name("foo").start())) {
+    void shouldCloseSpanOnNotFoundWithCustomFeignConfiguration() {
+		try (Tracer.SpanInScope ws = tracer.withSpanInScope(tracer.nextSpan().name("foo").start())) {
 			log.info("sending a request");
 			this.customConfFeignInterface.notFound();
 			fail("Must throw an exception");

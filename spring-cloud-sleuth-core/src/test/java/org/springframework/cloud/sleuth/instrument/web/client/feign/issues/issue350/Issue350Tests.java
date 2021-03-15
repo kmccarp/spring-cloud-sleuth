@@ -16,25 +16,19 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client.feign.issues.issue350;
 
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
 import brave.Tracing;
 import brave.sampler.Sampler;
 import feign.Logger;
-import org.junit.Before;
-import zipkin2.Span;
-import zipkin2.reporter.Reporter;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.cloud.sleuth.instrument.web.TraceWebServletAutoConfiguration;
-import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.sleuth.instrument.web.TraceWebServletAutoConfiguration;
+import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -43,6 +37,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import zipkin2.Span;
+import zipkin2.reporter.Reporter;
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -60,13 +59,13 @@ public class Issue350Tests {
 	@Autowired Tracing tracer;
 	@Autowired ArrayListSpanReporter reporter;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		this.reporter.clear();
 	}
 
 	@Test
-	public void should_successfully_work_without_hystrix() {
+    void should_successfully_work_without_hystrix() {
 		this.template.getForEntity("http://localhost:9988/sleuth/test-not-ok", String.class);
 
 		List<Span> spans = this.reporter.getSpans();

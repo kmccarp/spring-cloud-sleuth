@@ -16,29 +16,24 @@
 
 package org.springframework.cloud.sleuth.instrument.rxjava;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
-
 import brave.Tracer;
 import brave.Tracing;
 import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import rx.functions.Action0;
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
 import rx.plugins.RxJavaSchedulersHook;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.*;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -58,22 +53,22 @@ public class SleuthRxJavaSchedulersHookTests {
 			.build();
 	Tracer tracer = this.tracing.tracer();
 
-	@After
-	public void clean() {
+	@AfterEach
+    void clean() {
 		this.tracing.close();
 		this.reporter.clear();
 	}
 	private static StringBuilder caller;
 
-	@Before
-	@After
-	public void setup() {
+	@BeforeEach
+	@AfterEach
+    void setup() {
 		RxJavaPlugins.getInstance().reset();
 		caller = new StringBuilder();
 	}
 
 	@Test
-	public void should_not_override_existing_custom_hooks() {
+    void should_not_override_existing_custom_hooks() {
 		RxJavaPlugins.getInstance().registerErrorHandler(new MyRxJavaErrorHandler());
 		RxJavaPlugins.getInstance().registerObservableExecutionHook(new MyRxJavaObservableExecutionHook());
 
@@ -84,10 +79,10 @@ public class SleuthRxJavaSchedulersHookTests {
 	}
 
 	@Test
-	public void should_wrap_delegates_action_in_wrapped_action_when_delegate_is_present_on_schedule() {
+    void should_wrap_delegates_action_in_wrapped_action_when_delegate_is_present_on_schedule() {
 		RxJavaPlugins.getInstance().registerSchedulersHook(new MyRxJavaSchedulersHook());
 		SleuthRxJavaSchedulersHook schedulersHook = new SleuthRxJavaSchedulersHook(
-			this.tracer, this.threadsToIgnore);
+                this.tracer, this.threadsToIgnore);
 		Action0 action = schedulersHook.onSchedule(() -> {
 			caller = new StringBuilder("hello");
 		});
@@ -101,12 +96,12 @@ public class SleuthRxJavaSchedulersHookTests {
 	}
 
 	@Test
-	public void should_not_create_a_span_when_current_thread_should_be_ignored()
+    void should_not_create_a_span_when_current_thread_should_be_ignored()
 			throws ExecutionException, InterruptedException {
 		String threadNameToIgnore = "^MyCustomThread.*$";
 		RxJavaPlugins.getInstance().registerSchedulersHook(new MyRxJavaSchedulersHook());
 		SleuthRxJavaSchedulersHook schedulersHook = new SleuthRxJavaSchedulersHook(
-			this.tracer, Collections.singletonList(threadNameToIgnore));
+                this.tracer, Collections.singletonList(threadNameToIgnore));
 		Future<Void> hello = executorService().submit((Callable<Void>) () -> {
 			Action0 action = schedulersHook.onSchedule(() -> {
 				caller = new StringBuilder("hello");

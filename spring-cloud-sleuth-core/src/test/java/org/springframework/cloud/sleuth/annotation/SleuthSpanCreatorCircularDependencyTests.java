@@ -15,10 +15,7 @@
  */
 package org.springframework.cloud.sleuth.annotation;
 
-import zipkin2.Span;
-import zipkin2.reporter.Reporter;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,11 +23,15 @@ import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
+import zipkin2.Span;
+import zipkin2.reporter.Reporter;
 
 @SpringBootTest(classes = SleuthSpanCreatorCircularDependencyTests.TestConfiguration.class)
 @RunWith(SpringRunner.class)
 public class SleuthSpanCreatorCircularDependencyTests {
-	@Test public void contextLoads() throws Exception {
+
+	@Test
+    void contextLoads() throws Exception {
 	}
 
 	private static class Service1 {

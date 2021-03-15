@@ -17,35 +17,35 @@
 package org.springframework.cloud.sleuth.util;
 
 import org.assertj.core.api.BDDAssertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SpanNameUtilTests {
 
 	@Test
-	public void should_convert_a_name_in_hyphen_based_notation() throws Exception {
+    void should_convert_a_name_in_hyphen_based_notation() throws Exception {
 		BDDAssertions.then(SpanNameUtil.toLowerHyphen("aMethodNameInCamelCaseNotation"))
 				.isEqualTo("a-method-name-in-camel-case-notation");
 	}
 
 	@Test
-	public void should_convert_a_class_name_in_hyphen_based_notation() throws Exception {
+    void should_convert_a_class_name_in_hyphen_based_notation() throws Exception {
 		BDDAssertions.then(SpanNameUtil.toLowerHyphen("MySuperClassName"))
 				.isEqualTo("my-super-class-name");
 	}
 
 	@Test
-	public void should_not_shorten_a_name_that_is_below_max_threshold() throws Exception {
+    void should_not_shorten_a_name_that_is_below_max_threshold() throws Exception {
 		BDDAssertions.then(SpanNameUtil.shorten("someName"))
 				.isEqualTo("someName");
 	}
 
 	@Test
-	public void should_not_shorten_a_name_that_is_null() throws Exception {
+    void should_not_shorten_a_name_that_is_null() throws Exception {
 		BDDAssertions.then(SpanNameUtil.shorten(null)).isNull();
 	}
 
 	@Test
-	public void should_shorten_a_name_that_is_above_max_threshold() throws Exception {
+    void should_shorten_a_name_that_is_above_max_threshold() throws Exception {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 60; i++) {
 			sb.append("a");

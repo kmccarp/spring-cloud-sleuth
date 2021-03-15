@@ -16,25 +16,19 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client.feign.issues.issue393;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import brave.Tracing;
 import brave.sampler.Sampler;
 import feign.okhttp.OkHttpClient;
-import zipkin2.Span;
-import zipkin2.reporter.Reporter;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.sleuth.instrument.web.TraceWebServletAutoConfiguration;
-import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.sleuth.instrument.web.TraceWebServletAutoConfiguration;
+import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +39,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import zipkin2.Span;
+import zipkin2.reporter.Reporter;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -61,13 +60,13 @@ public class Issue393Tests {
 	@Autowired ArrayListSpanReporter reporter;
 	@Autowired Tracing tracer;
 
-	@Before
-	public void open() {
+	@BeforeEach
+    void open() {
 		this.reporter.clear();
 	}
 
 	@Test
-	public void should_successfully_work_when_service_discovery_is_on_classpath_and_feign_uses_url() {
+    void should_successfully_work_when_service_discovery_is_on_classpath_and_feign_uses_url() {
 		String url = "http://localhost:9978/hello/mikesarver";
 
 		ResponseEntity<String> response = this.template.getForEntity(url, String.class);

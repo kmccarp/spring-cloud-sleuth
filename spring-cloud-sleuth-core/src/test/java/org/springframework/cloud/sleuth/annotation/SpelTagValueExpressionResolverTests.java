@@ -16,7 +16,7 @@
 
 package org.springframework.cloud.sleuth.annotation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -24,8 +24,9 @@ import static org.assertj.core.api.BDDAssertions.then;
  * @author Marcin Grzejszczak
  */
 public class SpelTagValueExpressionResolverTests {
+
 	@Test
-	public void should_use_spel_to_resolve_a_value() throws Exception {
+    void should_use_spel_to_resolve_a_value() throws Exception {
 		SpelTagValueExpressionResolver resolver = new SpelTagValueExpressionResolver();
 		MyObject myObject = new MyObject();
 		myObject.name = "hello";
@@ -40,7 +41,7 @@ public class SpelTagValueExpressionResolverTests {
 	}
 
 	@Test
-	public void should_use_to_string_if_expression_is_not_analyzed_properly() throws Exception {
+    void should_use_to_string_if_expression_is_not_analyzed_properly() throws Exception {
 		SpelTagValueExpressionResolver resolver = new SpelTagValueExpressionResolver();
 
 		String resolved = resolver.resolve("invalid() structure + 1", new Foo());

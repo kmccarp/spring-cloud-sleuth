@@ -24,7 +24,7 @@ import org.springframework.messaging.support.NativeMessageHeaderAccessor;
  * Tests that native headers are redundantly added
  */
 public class MessageHeaderPropagation_NativeTest
-		extends PropagationSetterTest<MessageHeaderAccessor, String> {
+extends PropagationSetterTest<MessageHeaderAccessor, String> {
 	NativeMessageHeaderAccessor carrier = new NativeMessageHeaderAccessor() {
 	};
 

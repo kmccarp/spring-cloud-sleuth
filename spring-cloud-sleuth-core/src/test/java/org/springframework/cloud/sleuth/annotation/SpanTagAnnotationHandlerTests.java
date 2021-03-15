@@ -16,13 +16,9 @@
 
 package org.springframework.cloud.sleuth.annotation;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-
 import brave.sampler.Sampler;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -30,6 +26,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -42,13 +41,13 @@ public class SpanTagAnnotationHandlerTests {
 	@Autowired TagValueResolver tagValueResolver;
 	SpanTagAnnotationHandler handler;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		this.handler = new SpanTagAnnotationHandler(this.beanFactory);
 	}
 
 	@Test
-	public void shouldUseCustomTagValueResolver() throws NoSuchMethodException, SecurityException {
+    void shouldUseCustomTagValueResolver() throws NoSuchMethodException, SecurityException {
 		Method method = AnnotationMockClass.class.getMethod("getAnnotationForTagValueResolver", String.class);
 		Annotation annotation = method.getParameterAnnotations()[0][0];
 		if (annotation instanceof SpanTag) {
@@ -58,14 +57,14 @@ public class SpanTagAnnotationHandlerTests {
 			fail("Annotation was not SleuthSpanTag");
 		}
 	}
-	
+
 	@Test
-	public void shouldUseTagValueExpression() throws NoSuchMethodException, SecurityException {
+    void shouldUseTagValueExpression() throws NoSuchMethodException, SecurityException {
 		Method method = AnnotationMockClass.class.getMethod("getAnnotationForTagValueExpression", String.class);
 		Annotation annotation = method.getParameterAnnotations()[0][0];
 		if (annotation instanceof SpanTag) {
 			String resolvedValue = handler.resolveTagValue((SpanTag) annotation, "test");
-			
+
 			assertThat(resolvedValue).isEqualTo("hello characters");
 		} else {
 			fail("Annotation was not SleuthSpanTag");
@@ -73,7 +72,7 @@ public class SpanTagAnnotationHandlerTests {
 	}
 
 	@Test
-	public void shouldReturnArgumentToString() throws NoSuchMethodException, SecurityException {
+    void shouldReturnArgumentToString() throws NoSuchMethodException, SecurityException {
 		Method method = AnnotationMockClass.class.getMethod("getAnnotationForArgumentToString", Long.class);
 		Annotation annotation = method.getParameterAnnotations()[0][0];
 		if (annotation instanceof SpanTag) {

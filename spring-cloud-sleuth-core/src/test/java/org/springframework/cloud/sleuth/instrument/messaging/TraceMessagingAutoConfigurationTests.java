@@ -22,8 +22,7 @@ import brave.sampler.Sampler;
 import brave.spring.rabbit.SpringRabbitTracing;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,13 +54,13 @@ public class TraceMessagingAutoConfigurationTests {
 	@Autowired ConsumerFactory consumerFactory;
 
 	@Test
-	public void should_wrap_rabbit_template() {
+    void should_wrap_rabbit_template() {
 		then(this.rabbitTemplate).isNotNull();
 		then(this.postProcessor.rabbitTracingCalled).isTrue();
 	}
 
 	@Test
-	public void should_wrap_kafka() {
+    void should_wrap_kafka() {
 		this.producerFactory.createProducer();
 		then(this.mySleuthKafkaAspect.producerWrapped).isTrue();
 

@@ -16,22 +16,6 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Map;
-
-import org.assertj.core.api.BDDAssertions;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.RestTemplate;
-
 import brave.Span;
 import brave.Tracer;
 import brave.Tracing;
@@ -42,6 +26,21 @@ import brave.spring.web.TracingClientHttpRequestInterceptor;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.SocketPolicy;
+import org.assertj.core.api.BDDAssertions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author Marcin Grzejszczak
@@ -61,28 +60,28 @@ public class TraceRestTemplateInterceptorIntegrationTests {
 			.build();
 	Tracer tracer = this.tracing.tracer();
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		this.template.setInterceptors(Arrays.<ClientHttpRequestInterceptor>asList(
 				TracingClientHttpRequestInterceptor.create(HttpTracing.create(this.tracing))));
 	}
 
-	@After
-	public void clean() {
+	@AfterEach
+    void clean() {
 		Tracing.current().close();
 	}
 
 	// Issue #198
 	@Test
-	public void spanRemovedFromThreadUponException() throws IOException {
+    void spanRemovedFromThreadUponException() throws IOException {
 		this.mockWebServer.enqueue(new MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START));
 		Span span = this.tracer.nextSpan().name("new trace");
 
-		try(Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
+		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
 			this.template.getForEntity(
 					"http://localhost:" + this.mockWebServer.getPort() + "/exception",
 					Map.class).getBody();
-			Assert.fail("should throw an exception");
+			fail("should throw an exception");
 		} catch (RuntimeException e) {
 			BDDAssertions.then(e).hasRootCauseInstanceOf(IOException.class);
 		} finally {

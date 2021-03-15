@@ -16,34 +16,26 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client.exception;
 
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
-import java.util.Collections;
-import java.util.Map;
-
 import brave.Span;
 import brave.Tracer;
 import brave.Tracing;
 import brave.sampler.Sampler;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
+import com.netflix.loadbalancer.BaseLoadBalancer;
+import com.netflix.loadbalancer.ILoadBalancer;
+import com.netflix.loadbalancer.Server;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.rule.OutputCapture;
-import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.netflix.ribbon.RibbonClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.cloud.netflix.ribbon.RibbonClient;
+import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
@@ -54,16 +46,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.loadbalancer.BaseLoadBalancer;
-import com.netflix.loadbalancer.ILoadBalancer;
-import com.netflix.loadbalancer.Server;
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.util.Collections;
+import java.util.Map;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @RunWith(JUnitParamsRunner.class)
 @SpringBootTest(classes = {
-		WebClientExceptionTests.TestConfiguration.class },
-		properties = {"ribbon.ConnectTimeout=30000", "spring.application.name=exceptionservice" },
+		WebClientExceptionTests.TestConfiguration.class},
+		properties = {"ribbon.ConnectTimeout=30000", "spring.application.name=exceptionservice"},
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class WebClientExceptionTests {
 
@@ -81,26 +75,26 @@ public class WebClientExceptionTests {
 	@Autowired Tracing tracer;
 	@Autowired ArrayListSpanReporter reporter;
 
-	@Before
-	public void open() {
+	@BeforeEach
+    void open() {
 		this.reporter.clear();
 	}
 
 	// issue #198
 	@Test
 	@Parameters
-	public void shouldCloseSpanUponException(ResponseEntityProvider provider)
+    void shouldCloseSpanUponException(ResponseEntityProvider provider)
 			throws IOException {
 		Span span = this.tracer.tracer().nextSpan().name("new trace").start();
 
 		try (Tracer.SpanInScope ws = this.tracer.tracer().withSpanInScope(span)) {
 			log.info("Started new span " + span);
 			provider.get(this);
-			Assert.fail("should throw an exception");
+			fail("should throw an exception");
 		}
-		catch (RuntimeException e) {
-			// SleuthAssertions.then(e).hasRootCauseInstanceOf(IOException.class);
-		} finally {
+                catch (RuntimeException e) {
+                    // SleuthAssertions.then(e).hasRootCauseInstanceOf(IOException.class);
+		        } finally {
 			span.finish();
 		}
 

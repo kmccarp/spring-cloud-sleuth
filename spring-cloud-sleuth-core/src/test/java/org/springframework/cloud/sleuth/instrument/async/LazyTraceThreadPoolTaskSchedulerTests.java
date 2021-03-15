@@ -16,29 +16,27 @@
 
 package org.springframework.cloud.sleuth.instrument.async;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Date;
-import java.util.concurrent.Callable;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadFactory;
-
 import brave.Tracing;
 import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cloud.sleuth.DefaultSpanNamer;
 import org.springframework.cloud.sleuth.SpanNamer;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.ErrorHandler;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Date;
+import java.util.concurrent.Callable;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LazyTraceThreadPoolTaskSchedulerTests {
@@ -56,8 +54,8 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 
 	LazyTraceThreadPoolTaskScheduler executor;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		this.executor = new LazyTraceThreadPoolTaskScheduler(beanFactory(),
 				this.delegate);
 	}
@@ -71,21 +69,21 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void setPoolSize() {
+    void setPoolSize() {
 		this.executor.setPoolSize(10);
 
 		BDDMockito.then(this.delegate).should().setPoolSize(10);
 	}
 
 	@Test
-	public void setRemoveOnCancelPolicy() {
+    void setRemoveOnCancelPolicy() {
 		this.executor.setRemoveOnCancelPolicy(true);
 
 		BDDMockito.then(this.delegate).should().setRemoveOnCancelPolicy(true);
 	}
 
 	@Test
-	public void setErrorHandler() {
+    void setErrorHandler() {
 		ErrorHandler handler = (throwable) -> {
 		};
 		this.executor.setErrorHandler(handler);
@@ -94,35 +92,35 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void getScheduledExecutor() {
+    void getScheduledExecutor() {
 		this.executor.getScheduledExecutor();
 
 		BDDMockito.then(this.delegate).should().getScheduledExecutor();
 	}
 
 	@Test
-	public void getPoolSize() {
+    void getPoolSize() {
 		this.executor.getPoolSize();
 
 		BDDMockito.then(this.delegate).should().getPoolSize();
 	}
 
 	@Test
-	public void isRemoveOnCancelPolicy() {
+    void isRemoveOnCancelPolicy() {
 		this.executor.setRemoveOnCancelPolicy(true);
 
 		BDDMockito.then(this.delegate).should().setRemoveOnCancelPolicy(true);
 	}
 
 	@Test
-	public void getActiveCount() {
+    void getActiveCount() {
 		this.executor.getActiveCount();
 
 		BDDMockito.then(this.delegate).should().getActiveCount();
 	}
 
 	@Test
-	public void execute() {
+    void execute() {
 		Runnable r = () -> {
 		};
 		this.executor.execute(r);
@@ -131,7 +129,7 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void execute1() {
+    void execute1() {
 		Runnable r = () -> {
 		};
 		this.executor.execute(r, 10L);
@@ -141,7 +139,7 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void submit() {
+    void submit() {
 		Runnable c = () -> {
 		};
 		this.executor.submit(c);
@@ -151,7 +149,7 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void submit1() {
+    void submit1() {
 		Callable c = () -> null;
 		this.executor.submit(c);
 
@@ -160,7 +158,7 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void submitListenable() {
+    void submitListenable() {
 		Runnable c = () -> {
 		};
 		this.executor.submitListenable(c);
@@ -170,7 +168,7 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void submitListenable1() {
+    void submitListenable1() {
 		Callable c = () -> null;
 		this.executor.submitListenable(c);
 
@@ -179,14 +177,14 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void prefersShortLivedTasks() {
+    void prefersShortLivedTasks() {
 		this.executor.prefersShortLivedTasks();
 
 		BDDMockito.then(this.delegate).should().prefersShortLivedTasks();
 	}
 
 	@Test
-	public void schedule() {
+    void schedule() {
 		Runnable c = () -> {
 		};
 		Trigger trigger = triggerContext -> null;
@@ -197,7 +195,7 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void schedule1() {
+    void schedule1() {
 		Runnable c = () -> {
 		};
 		Date date = new Date();
@@ -208,7 +206,7 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void scheduleAtFixedRate() {
+    void scheduleAtFixedRate() {
 		Runnable c = () -> {
 		};
 		Date date = new Date();
@@ -220,7 +218,7 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void scheduleAtFixedRate1() {
+    void scheduleAtFixedRate1() {
 		Runnable c = () -> {
 		};
 		this.executor.scheduleAtFixedRate(c, 10L);
@@ -230,7 +228,7 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void scheduleWithFixedDelay() {
+    void scheduleWithFixedDelay() {
 		Runnable c = () -> {
 		};
 		Date date = new Date();
@@ -242,7 +240,7 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void scheduleWithFixedDelay1() {
+    void scheduleWithFixedDelay1() {
 		Runnable c = () -> {
 		};
 		this.executor.scheduleWithFixedDelay(c, 10L);
@@ -252,7 +250,7 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void scheduleWithFixedDelay2() {
+    void scheduleWithFixedDelay2() {
 		Runnable c = () -> {
 		};
 		Instant instant = Instant.now();
@@ -265,7 +263,7 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void scheduleWithFixedDelay3() {
+    void scheduleWithFixedDelay3() {
 		Runnable c = () -> {
 		};
 		Duration duration = Duration.ZERO;
@@ -276,7 +274,7 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void setThreadFactory() {
+    void setThreadFactory() {
 		ThreadFactory threadFactory = r -> null;
 		this.executor.setThreadFactory(threadFactory);
 
@@ -284,14 +282,14 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void setThreadNamePrefix() {
+    void setThreadNamePrefix() {
 		this.executor.setThreadNamePrefix("foo");
 
 		BDDMockito.then(this.delegate).should().setThreadNamePrefix("foo");
 	}
 
 	@Test
-	public void setRejectedExecutionHandler() {
+    void setRejectedExecutionHandler() {
 		RejectedExecutionHandler handler = (r, executor1) -> {
 		};
 		this.executor.setRejectedExecutionHandler(handler);
@@ -300,56 +298,56 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void setWaitForTasksToCompleteOnShutdown() {
+    void setWaitForTasksToCompleteOnShutdown() {
 		this.executor.setWaitForTasksToCompleteOnShutdown(true);
 
 		BDDMockito.then(this.delegate).should().setWaitForTasksToCompleteOnShutdown(true);
 	}
 
 	@Test
-	public void setAwaitTerminationSeconds() {
+    void setAwaitTerminationSeconds() {
 		this.executor.setAwaitTerminationSeconds(10);
 
 		BDDMockito.then(this.delegate).should().setAwaitTerminationSeconds(10);
 	}
 
 	@Test
-	public void setBeanName() {
+    void setBeanName() {
 		this.executor.setBeanName("foo");
 
 		BDDMockito.then(this.delegate).should().setBeanName("foo");
 	}
 
 	@Test
-	public void afterPropertiesSet() {
+    void afterPropertiesSet() {
 		this.executor.afterPropertiesSet();
 
 		BDDMockito.then(this.delegate).should().afterPropertiesSet();
 	}
 
 	@Test
-	public void initialize() {
+    void initialize() {
 		this.executor.initialize();
 
 		BDDMockito.then(this.delegate).should().initialize();
 	}
 
 	@Test
-	public void destroy() {
+    void destroy() {
 		this.executor.destroy();
 
 		BDDMockito.then(this.delegate).should().destroy();
 	}
 
 	@Test
-	public void shutdown() {
+    void shutdown() {
 		this.executor.shutdown();
 
 		BDDMockito.then(this.delegate).should().shutdown();
 	}
 
 	@Test
-	public void newThread() {
+    void newThread() {
 		Runnable runnable = () -> {
 		};
 		this.executor.newThread(runnable);
@@ -358,49 +356,49 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void getThreadNamePrefix() {
+    void getThreadNamePrefix() {
 		this.executor.getThreadNamePrefix();
 
 		BDDMockito.then(this.delegate).should().getThreadNamePrefix();
 	}
 
 	@Test
-	public void setThreadPriority() {
+    void setThreadPriority() {
 		this.executor.setThreadPriority(10);
 
 		BDDMockito.then(this.delegate).should().setThreadPriority(10);
 	}
 
 	@Test
-	public void getThreadPriority() {
+    void getThreadPriority() {
 		this.executor.getThreadPriority();
 
 		BDDMockito.then(this.delegate).should().getThreadPriority();
 	}
 
 	@Test
-	public void setDaemon() {
+    void setDaemon() {
 		this.executor.setDaemon(true);
 
 		BDDMockito.then(this.delegate).should().setDaemon(true);
 	}
 
 	@Test
-	public void isDaemon() {
+    void isDaemon() {
 		this.executor.isDaemon();
 
 		BDDMockito.then(this.delegate).should().isDaemon();
 	}
 
 	@Test
-	public void setThreadGroupName() {
+    void setThreadGroupName() {
 		this.executor.setThreadGroupName("foo");
 
 		BDDMockito.then(this.delegate).should().setThreadGroupName("foo");
 	}
 
 	@Test
-	public void setThreadGroup() {
+    void setThreadGroup() {
 		ThreadGroup threadGroup = new ThreadGroup("foo");
 		this.executor.setThreadGroup(threadGroup);
 
@@ -408,14 +406,14 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void getThreadGroup() {
+    void getThreadGroup() {
 		this.executor.getThreadGroup();
 
 		BDDMockito.then(this.delegate).should().getThreadGroup();
 	}
 
 	@Test
-	public void createThread() {
+    void createThread() {
 		Runnable r = () -> {
 		};
 		this.executor.createThread(r);
@@ -424,7 +422,7 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void schedule2() {
+    void schedule2() {
 		Runnable r = () -> {
 		};
 		Instant instant = Instant.now();
@@ -435,7 +433,7 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void scheduleAtFixedRate2() {
+    void scheduleAtFixedRate2() {
 		Runnable r = () -> {
 		};
 		Instant instant = Instant.now();
@@ -448,7 +446,7 @@ public class LazyTraceThreadPoolTaskSchedulerTests {
 	}
 
 	@Test
-	public void scheduleAtFixedRate3() {
+    void scheduleAtFixedRate3() {
 		Runnable r = () -> {
 		};
 		Duration duration = Duration.ZERO;

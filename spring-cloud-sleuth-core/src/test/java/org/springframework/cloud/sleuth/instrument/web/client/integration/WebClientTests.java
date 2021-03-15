@@ -16,18 +16,6 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client.integration;
 
-import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-
 import brave.Span;
 import brave.Tracer;
 import brave.Tracing;
@@ -37,8 +25,6 @@ import brave.sampler.Sampler;
 import com.netflix.loadbalancer.BaseLoadBalancer;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.Server;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -48,12 +34,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.awaitility.Awaitility;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -92,6 +75,13 @@ import reactor.ipc.netty.http.client.HttpClientResponse;
 import zipkin2.Annotation;
 import zipkin2.reporter.Reporter;
 
+import javax.servlet.http.HttpServletRequest;
+import java.lang.invoke.MethodHandles;
+import java.util.*;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -101,7 +91,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 @TestPropertySource(properties = {
 		"spring.sleuth.http.legacy.enabled=true",
 		"spring.application.name=fooservice",
-		"feign.hystrix.enabled=false" })
+		"feign.hystrix.enabled=false"})
 @DirtiesContext
 public class WebClientTests {
 	static final String TRACE_ID_NAME = "X-B3-TraceId";
@@ -129,15 +119,15 @@ public class WebClientTests {
 	@Autowired FooController fooController;
 	@Autowired MyRestTemplateCustomizer customizer;
 
-	@After
-	public void close() {
+	@AfterEach
+    void close() {
 		this.reporter.clear();
 		this.testErrorController.clear();
 		this.fooController.clear();
 	}
 
-	@BeforeClass
-	public static void cleanup() {
+	@BeforeAll
+    static void cleanup() {
 		Hooks.resetOnLastOperator();
 		Schedulers.resetFactory();
 	}
@@ -145,7 +135,7 @@ public class WebClientTests {
 	@Test
 	@Parameters
 	@SuppressWarnings("unchecked")
-	public void shouldCreateANewSpanWithClientSideTagsWhenNoPreviousTracingWasPresent(
+    void shouldCreateANewSpanWithClientSideTagsWhenNoPreviousTracingWasPresent(
 			ResponseEntityProvider provider) {
 		ResponseEntity<String> response = provider.get(this);
 
@@ -191,7 +181,7 @@ public class WebClientTests {
 	@Test
 	@Parameters
 	@SuppressWarnings("unchecked")
-	public void shouldPropagateNotSamplingHeader(ResponseEntityProvider provider) {
+    void shouldPropagateNotSamplingHeader(ResponseEntityProvider provider) {
 		Span span = this.tracer.nextSpan(
 				TraceContextOrSamplingFlags.create(SamplingFlags.NOT_SAMPLED))
 				.name("foo").start();
@@ -219,7 +209,7 @@ public class WebClientTests {
 	@Test
 	@Parameters
 	@SuppressWarnings("unchecked")
-	public void shouldAttachTraceIdWhenCallingAnotherService(
+    void shouldAttachTraceIdWhenCallingAnotherService(
 			ResponseEntityProvider provider) {
 		Span span = this.tracer.nextSpan().name("foo").start();
 
@@ -240,7 +230,7 @@ public class WebClientTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void shouldAttachTraceIdWhenCallingAnotherServiceForNettyHttpClient() throws Exception {
+    void shouldAttachTraceIdWhenCallingAnotherServiceForNettyHttpClient() throws Exception {
 		Span span = this.tracer.nextSpan().name("foo").start();
 
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span)) {
@@ -262,7 +252,7 @@ public class WebClientTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void shouldAttachTraceIdWhenCallingAnotherServiceForHttpClient() throws Exception {
+    void shouldAttachTraceIdWhenCallingAnotherServiceForHttpClient() throws Exception {
 		Span span = this.tracer.nextSpan().name("foo").start();
 
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span)) {
@@ -285,7 +275,7 @@ public class WebClientTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void shouldAttachTraceIdWhenCallingAnotherServiceForAsyncHttpClient() throws Exception {
+    void shouldAttachTraceIdWhenCallingAnotherServiceForAsyncHttpClient() throws Exception {
 		Span span = this.tracer.nextSpan().name("foo").start();
 
 		CloseableHttpAsyncClient client = this.httpAsyncClientBuilder.build();
@@ -294,15 +284,18 @@ public class WebClientTests {
 			Future<HttpResponse> future = client
 					.execute(new HttpGet("http://localhost:" + port),
 							new FutureCallback<HttpResponse>() {
-								@Override public void completed(HttpResponse result) {
+								@Override
+                                public void completed(HttpResponse result) {
 
 								}
 
-								@Override public void failed(Exception ex) {
+								@Override
+                                public void failed(Exception ex) {
 
 								}
 
-								@Override public void cancelled() {
+								@Override
+                                public void cancelled() {
 
 								}
 							});
@@ -323,7 +316,7 @@ public class WebClientTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void shouldAttachTraceIdWhenCallingAnotherServiceViaWebClient() {
+    void shouldAttachTraceIdWhenCallingAnotherServiceViaWebClient() {
 		Span span = this.tracer.nextSpan().name("foo").start();
 
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span)) {
@@ -351,7 +344,7 @@ public class WebClientTests {
 
 	@Test
 	@Parameters
-	public void shouldAttachTraceIdWhenUsingFeignClientWithoutResponseBody(
+    void shouldAttachTraceIdWhenUsingFeignClientWithoutResponseBody(
 			ResponseEntityProvider provider) {
 		Span span = this.tracer.nextSpan().name("foo").start();
 
@@ -375,11 +368,12 @@ public class WebClientTests {
 	}
 
 	@Test
-	public void shouldCloseSpanWhenErrorControllerGetsCalled() {
+    void shouldCloseSpanWhenErrorControllerGetsCalled() {
 		try {
 			this.template.getForEntity("http://fooservice/nonExistent", String.class);
 			fail("An exception should be thrown");
-		} catch (HttpClientErrorException e) { }
+		} catch (HttpClientErrorException e) {
+        }
 
 		then(this.tracer.currentSpan()).isNull();
 		Optional<zipkin2.Span> storedSpan = this.reporter.getSpans().stream()
@@ -402,7 +396,7 @@ public class WebClientTests {
 	}
 
 	@Test
-	public void shouldNotExecuteErrorControllerWhenUrlIsFound() {
+    void shouldNotExecuteErrorControllerWhenUrlIsFound() {
 		this.template.getForEntity("http://fooservice/notrace", String.class);
 
 		then(this.tracer.currentSpan()).isNull();
@@ -410,7 +404,7 @@ public class WebClientTests {
 	}
 
 	@Test
-	public void should_wrap_rest_template_builders() {
+    void should_wrap_rest_template_builders() {
 		Span span = this.tracer.nextSpan().name("foo").start();
 
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span)) {

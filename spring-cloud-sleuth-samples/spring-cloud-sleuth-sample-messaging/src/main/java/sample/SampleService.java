@@ -30,7 +30,8 @@ import org.springframework.web.client.RestTemplate;
  * @author Dave Syer
  *
  */
-@MessageEndpoint public class SampleService implements
+@MessageEndpoint
+public class SampleService implements
 		ApplicationListener<ServletWebServerInitializedEvent> {
 	private static final Log log = LogFactory.getLog(SampleService.class);
 

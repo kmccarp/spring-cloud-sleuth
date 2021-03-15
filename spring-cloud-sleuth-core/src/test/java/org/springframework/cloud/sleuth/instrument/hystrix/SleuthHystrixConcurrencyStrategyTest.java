@@ -16,22 +16,9 @@
 
 package org.springframework.cloud.sleuth.instrument.hystrix;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
-
 import brave.Tracing;
 import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.BDDMockito;
-import org.mockito.Mockito;
-import org.springframework.cloud.sleuth.DefaultSpanNamer;
-import org.springframework.cloud.sleuth.instrument.async.TraceCallable;
-import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
-
 import com.netflix.hystrix.HystrixThreadPoolKey;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
 import com.netflix.hystrix.strategy.HystrixPlugins;
@@ -42,6 +29,18 @@ import com.netflix.hystrix.strategy.executionhook.HystrixCommandExecutionHook;
 import com.netflix.hystrix.strategy.metrics.HystrixMetricsPublisher;
 import com.netflix.hystrix.strategy.properties.HystrixPropertiesStrategy;
 import com.netflix.hystrix.strategy.properties.HystrixProperty;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
+import org.springframework.cloud.sleuth.DefaultSpanNamer;
+import org.springframework.cloud.sleuth.instrument.async.TraceCallable;
+import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -58,15 +57,15 @@ public class SleuthHystrixConcurrencyStrategyTest {
 			.spanReporter(this.reporter)
 			.build();
 
-	@Before
-	@After
-	public void setup() {
+	@BeforeEach
+	@AfterEach
+    void setup() {
 		HystrixPlugins.reset();
 		this.reporter.clear();
 	}
 
 	@Test
-	public void should_not_override_existing_custom_strategies() {
+    void should_not_override_existing_custom_strategies() {
 		HystrixPlugins.getInstance().registerCommandExecutionHook(new MyHystrixCommandExecutionHook());
 		HystrixPlugins.getInstance().registerEventNotifier(new MyHystrixEventNotifier());
 		HystrixPlugins.getInstance().registerMetricsPublisher(new MyHystrixMetricsPublisher());
@@ -85,7 +84,7 @@ public class SleuthHystrixConcurrencyStrategyTest {
 	}
 
 	@Test
-	public void should_wrap_delegates_callable_in_trace_callable_when_delegate_is_present()
+    void should_wrap_delegates_callable_in_trace_callable_when_delegate_is_present()
 			throws Exception {
 		HystrixPlugins.getInstance().registerConcurrencyStrategy(new MyHystrixConcurrencyStrategy());
 		SleuthHystrixConcurrencyStrategy strategy = new SleuthHystrixConcurrencyStrategy(
@@ -98,7 +97,7 @@ public class SleuthHystrixConcurrencyStrategyTest {
 	}
 
 	@Test
-	public void should_wrap_callable_in_trace_callable_when_delegate_is_present()
+    void should_wrap_callable_in_trace_callable_when_delegate_is_present()
 			throws Exception {
 		SleuthHystrixConcurrencyStrategy strategy = new SleuthHystrixConcurrencyStrategy(
 				this.tracing, new DefaultSpanNamer());
@@ -109,7 +108,7 @@ public class SleuthHystrixConcurrencyStrategyTest {
 	}
 
 	@Test
-	public void should_add_trace_keys_when_span_is_created()
+    void should_add_trace_keys_when_span_is_created()
 			throws Exception {
 		SleuthHystrixConcurrencyStrategy strategy = new SleuthHystrixConcurrencyStrategy(
 				this.tracing, new DefaultSpanNamer());
@@ -122,7 +121,7 @@ public class SleuthHystrixConcurrencyStrategyTest {
 	}
 
 	@Test
-	public void should_delegate_work_to_custom_hystrix_concurrency_strategy()
+    void should_delegate_work_to_custom_hystrix_concurrency_strategy()
 			throws Exception {
 		HystrixConcurrencyStrategy strategy = Mockito.mock(HystrixConcurrencyStrategy.class);
 		HystrixPlugins.getInstance().registerConcurrencyStrategy(strategy);
@@ -135,7 +134,7 @@ public class SleuthHystrixConcurrencyStrategyTest {
 		sleuthStrategy.getThreadPool(HystrixThreadPoolKey.Factory.asKey(""),
 				Mockito.mock(HystrixProperty.class), Mockito.mock(HystrixProperty.class),
 				Mockito.mock(HystrixProperty.class), TimeUnit.DAYS, Mockito.mock(
-						BlockingQueue.class));
+                BlockingQueue.class));
 		sleuthStrategy.getBlockingQueue(10);
 		sleuthStrategy.getRequestVariable(Mockito.mock(
 				HystrixLifecycleForwardingRequestVariable.class));

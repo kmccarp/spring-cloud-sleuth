@@ -16,43 +16,28 @@
 
 package org.springframework.cloud.sleuth.instrument.async;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import brave.Tracer;
 import brave.Tracing;
 import org.aopalliance.aop.Advice;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.BDDMockito;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.aop.framework.AopConfigException;
 import org.springframework.aop.framework.ProxyFactoryBean;
-import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cloud.sleuth.DefaultSpanNamer;
 import org.springframework.cloud.sleuth.SpanNamer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.ClassUtils;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.*;
 
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
@@ -69,21 +54,21 @@ public class ExecutorBeanPostProcessorTests {
 	Tracing tracing = Tracing.newBuilder().build();
 
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		Mockito.when(beanFactory.getBean(Tracing.class))
 				.thenReturn(this.tracing);
 		Mockito.when(beanFactory.getBean(SpanNamer.class))
 				.thenReturn(new DefaultSpanNamer());
 	}
 
-	@After
-	public void clear() {
+	@AfterEach
+    void clear() {
 		this.tracing.close();
 	}
 
 	@Test
-	public void should_create_a_cglib_proxy_by_default() throws Exception {
+    void should_create_a_cglib_proxy_by_default() throws Exception {
 		Object o = new ExecutorBeanPostProcessor(this.beanFactory)
 				.postProcessAfterInitialization(new Foo(), "foo");
 
@@ -98,7 +83,7 @@ public class ExecutorBeanPostProcessorTests {
 	}
 
 	@Test
-	public void should_fallback_to_sleuth_implementation_when_cglib_cannot_be_created() throws Exception {
+    void should_fallback_to_sleuth_implementation_when_cglib_cannot_be_created() throws Exception {
 		ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 
 		Object o = new ExecutorBeanPostProcessor(this.beanFactory)
@@ -109,7 +94,7 @@ public class ExecutorBeanPostProcessorTests {
 	}
 
 	@Test
-	public void should_fallback_to_default_implementation_when_exception_thrown()
+    void should_fallback_to_default_implementation_when_exception_thrown()
 			throws Exception {
 		ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 		ExecutorBeanPostProcessor bpp = new ExecutorBeanPostProcessor(this.beanFactory) {
@@ -128,7 +113,7 @@ public class ExecutorBeanPostProcessorTests {
 	}
 
 	@Test
-	public void should_create_a_cglib_proxy_by_default_for_ThreadPoolTaskExecutor() throws Exception {
+    void should_create_a_cglib_proxy_by_default_for_ThreadPoolTaskExecutor() throws Exception {
 		Object o = new ExecutorBeanPostProcessor(this.beanFactory)
 				.postProcessAfterInitialization(new FooThreadPoolTaskExecutor(), "foo");
 
@@ -140,11 +125,12 @@ public class ExecutorBeanPostProcessorTests {
 	}
 
 	@Test
-	public void should_throw_exception_when_it_is_not_possible_to_create_any_proxy_for_ThreadPoolTaskExecutor()
+    void should_throw_exception_when_it_is_not_possible_to_create_any_proxy_for_ThreadPoolTaskExecutor()
 			throws Exception {
 		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
 		ExecutorBeanPostProcessor bpp = new ExecutorBeanPostProcessor(this.beanFactory) {
-			@Override Object createThreadPoolTaskExecutorProxy(Object bean, boolean cglibProxy,
+			@Override
+            Object createThreadPoolTaskExecutorProxy(Object bean, boolean cglibProxy,
 					ThreadPoolTaskExecutor executor) {
 				throw new AopConfigException("foo");
 			}
@@ -155,7 +141,7 @@ public class ExecutorBeanPostProcessorTests {
 	}
 
 	@Test
-	public void should_fallback_to_sleuth_impl_when_it_is_not_possible_to_create_any_proxy_for_ExecutorService()
+    void should_fallback_to_sleuth_impl_when_it_is_not_possible_to_create_any_proxy_for_ExecutorService()
 			throws Exception {
 		ExecutorService service = BDDMockito.mock(ExecutorService.class);
 		ExecutorBeanPostProcessor bpp = new ExecutorBeanPostProcessor(this.beanFactory) {
@@ -240,21 +226,22 @@ public class ExecutorBeanPostProcessorTests {
 	}
 
 	@Test
-	public void should_throw_real_exception_when_using_proxy() throws Exception {
+    void should_throw_real_exception_when_using_proxy() throws Exception {
 		// for LazyTraceExecutor
 		Mockito.when(this.beanFactory.getBean(Tracing.class))
-			.thenReturn(Tracing.newBuilder().build());
+                .thenReturn(Tracing.newBuilder().build());
 		Mockito.when(this.beanFactory.getBean(SpanNamer.class))
-			.thenReturn(new DefaultSpanNamer());
+                .thenReturn(new DefaultSpanNamer());
 
 		Object o = new ExecutorBeanPostProcessor(this.beanFactory)
-			.postProcessAfterInitialization(new RejectedExecutionExecutor(), "fooExecutor");
+                .postProcessAfterInitialization(new RejectedExecutionExecutor(), "fooExecutor");
 
 		then(o).isInstanceOf(RejectedExecutionExecutor.class);
 		then(ClassUtils.isCglibProxy(o)).isTrue();
-		thenThrownBy(() -> ((RejectedExecutionExecutor) o).execute(() -> {}))
-			.isInstanceOf(RejectedExecutionException.class)
-			.hasMessage("rejected");
+		thenThrownBy(() -> ((RejectedExecutionExecutor) o).execute(() -> {
+        }))
+                .isInstanceOf(RejectedExecutionException.class)
+                .hasMessage("rejected");
 	}
 
 	class RejectedExecutionExecutor implements Executor {

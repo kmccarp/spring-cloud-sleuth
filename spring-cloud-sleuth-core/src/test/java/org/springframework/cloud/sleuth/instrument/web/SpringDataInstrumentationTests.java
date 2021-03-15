@@ -16,19 +16,11 @@
 
 package org.springframework.cloud.sleuth.instrument.web;
 
-import java.net.URI;
-import java.util.stream.Stream;
-import javax.annotation.PostConstruct;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
 import brave.Tracer;
 import brave.sampler.Sampler;
 import org.awaitility.Awaitility;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -47,6 +39,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import zipkin2.Span;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import java.net.URI;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.BDDAssertions.then;
@@ -71,13 +70,13 @@ public class SpringDataInstrumentationTests {
 	@Autowired
 	ArrayListSpanReporter reporter;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		reporter.clear();
 	}
 
 	@Test
-	public void should_create_span_instrumented_by_a_handler_interceptor() {
+    void should_create_span_instrumented_by_a_handler_interceptor() {
 		long noOfNames = namesCount();
 
 		then(noOfNames).isEqualTo(8);

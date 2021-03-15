@@ -16,14 +16,11 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client.exceptionresolver;
 
-import javax.servlet.http.HttpServletRequest;
-import java.time.Instant;
-
 import brave.Span;
 import brave.Tracing;
 import brave.sampler.Sampler;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,15 +33,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import javax.servlet.http.HttpServletRequest;
+import java.time.Instant;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -57,7 +50,7 @@ public class Issue585Tests {
 	@LocalServerPort int port;
 
 	@Test
-	public void should_report_span_when_using_custom_exception_resolver() {
+    void should_report_span_when_using_custom_exception_resolver() {
 		ResponseEntity<String> entity = this.testRestTemplate.getForEntity(
 				"http://localhost:" + this.port + "/sleuthtest?greeting=foo",
 				String.class);

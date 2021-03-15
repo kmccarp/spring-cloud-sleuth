@@ -53,7 +53,7 @@ import reactor.core.scheduler.Schedulers;
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnProperty(value="spring.sleuth.reactor.enabled", matchIfMissing=true)
+@ConditionalOnProperty(value = "spring.sleuth.reactor.enabled", matchIfMissing = true)
 @ConditionalOnClass(Mono.class)
 @AutoConfigureAfter(TraceWebFluxAutoConfiguration.class)
 public class TraceReactorAutoConfiguration {

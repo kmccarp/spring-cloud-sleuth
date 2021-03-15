@@ -61,7 +61,7 @@ import java.lang.annotation.Target;
  * @author Marcin Grzejszczak
  * @since 1.0.0
  */
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface SpanName {

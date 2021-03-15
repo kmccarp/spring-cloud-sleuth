@@ -16,32 +16,31 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client.feign.issues.issue502;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.List;
-
 import brave.Tracing;
 import brave.sampler.Sampler;
 import feign.Client;
 import feign.Request;
 import feign.Response;
-import zipkin2.Span;
-import zipkin2.reporter.Reporter;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import zipkin2.Span;
+import zipkin2.reporter.Reporter;
+
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -59,13 +58,13 @@ public class Issue502Tests {
 	@Autowired ArrayListSpanReporter reporter;
 	@Autowired Tracing tracer;
 
-	@Before
-	public void open() {
+	@BeforeEach
+    void open() {
 		this.reporter.clear();
 	}
 
 	@Test
-	public void should_reuse_custom_feign_client() {
+    void should_reuse_custom_feign_client() {
 		String response = this.myNameRemote.get();
 
 		then(this.myClient.wasCalled()).isTrue();

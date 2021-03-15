@@ -52,7 +52,7 @@ import zipkin2.reporter.Reporter;
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnProperty(value="spring.sleuth.enabled", matchIfMissing=true)
+@ConditionalOnProperty(value = "spring.sleuth.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(SleuthProperties.class)
 public class TraceAutoConfiguration {
 

@@ -16,17 +16,12 @@
 
 package org.springframework.cloud.sleuth.instrument.reactor.sample;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import brave.Tracer;
 import brave.sampler.Sampler;
 import org.awaitility.Awaitility;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.WebApplicationType;
@@ -51,6 +46,10 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import zipkin2.Span;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
@@ -60,21 +59,22 @@ public class FlatMapTests {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FlatMapTests.class);
 
-	@BeforeClass
-	public static void setup() {
+	@BeforeAll
+    static void setup() {
 		Hooks.resetOnLastOperator();
 		Schedulers.resetFactory();
 		Issue866Configuration.hook = null;
 	}
 
-	@AfterClass
-	public static void cleanup() {
+	@AfterAll
+    static void cleanup() {
 		Issue866Configuration.hook = null;
 	}
 
 	@Rule public OutputCapture capture = new OutputCapture();
 
-	@Test public void should_work_with_flat_maps() {
+	@Test
+    void should_work_with_flat_maps() {
 		//given
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				FlatMapTests.TestConfiguration.class, Issue866Configuration.class)

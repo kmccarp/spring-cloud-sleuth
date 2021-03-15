@@ -16,10 +16,6 @@
 
 package org.springframework.cloud.sleuth.instrument.zuul;
 
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import brave.ErrorParser;
 import brave.Span;
 import brave.Tracer;
@@ -29,16 +25,19 @@ import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.monitoring.TracerFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.netflix.zuul.metrics.EmptyTracerFactory;
 import org.springframework.cloud.sleuth.instrument.web.SleuthHttpParserAccessor;
 import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -66,15 +65,15 @@ public class TracePostZuulFilterTests {
 	private TracePostZuulFilter filter = new TracePostZuulFilter(this.httpTracing);
 	RequestContext requestContext = new RequestContext();
 
-	@After
-	public void clean() {
+	@AfterEach
+    void clean() {
 		RequestContext.getCurrentContext().unset();
 		this.httpTracing.tracing().close();
 		RequestContext.testSetCurrentContext(null);
 	}
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		BDDMockito.given(this.httpServletResponse.getStatus()).willReturn(200);
 		this.requestContext.setRequest(this.httpServletRequest);
 		this.requestContext.setResponse(this.httpServletResponse);
@@ -83,21 +82,21 @@ public class TracePostZuulFilterTests {
 	}
 
 	@Test
-	public void should_run_when_status_is_unsuccessful() throws Exception {
+    void should_run_when_status_is_unsuccessful() throws Exception {
 		BDDMockito.given(this.httpServletResponse.getStatus()).willReturn(456);
 
 		then(this.filter.shouldFilter()).isTrue();
 	}
 
 	@Test
-	public void should_run_when_status_is_unknown() throws Exception {
+    void should_run_when_status_is_unknown() throws Exception {
 		BDDMockito.given(this.httpServletResponse.getStatus()).willReturn(0);
 
 		then(this.filter.shouldFilter()).isTrue();
 	}
 
 	@Test
-	public void should_handle_span_and_mark_it_as_handled() throws Exception {
+    void should_handle_span_and_mark_it_as_handled() throws Exception {
 		Span span = this.tracing.tracer().nextSpan().name("http:start").start();
 		BDDMockito.given(this.httpServletResponse.getStatus()).willReturn(456);
 

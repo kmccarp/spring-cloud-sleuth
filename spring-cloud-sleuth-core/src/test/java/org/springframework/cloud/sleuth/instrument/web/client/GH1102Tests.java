@@ -22,10 +22,7 @@ import brave.sampler.Sampler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.assertj.core.api.BDDAssertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import reactor.core.publisher.Mono;
-
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @RunWith(SpringRunner.class)
@@ -59,7 +57,7 @@ public class GH1102Tests {
 	int port;
 
 	@Test
-	public void should_store_retries_as_separate_spans() throws Exception {
+    void should_store_retries_as_separate_spans() throws Exception {
 		ScopedSpan foo = this.tracer.startScopedSpan("foo");
 		try {
 			this.webClient
@@ -70,9 +68,9 @@ public class GH1102Tests {
 					.retry(1).block();
 			BDDAssertions.fail("should throw exception");
 		}
-		catch (WebClientResponseException ex) {
+                catch (WebClientResponseException ex) {
 
-		} finally {
+                } finally {
 			foo.finish();
 		}
 

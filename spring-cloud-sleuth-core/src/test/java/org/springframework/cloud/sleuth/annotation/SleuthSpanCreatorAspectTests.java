@@ -16,18 +16,11 @@
 
 package org.springframework.cloud.sleuth.annotation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import brave.Span;
 import brave.Tracer;
 import brave.sampler.Sampler;
-import zipkin2.Annotation;
-import zipkin2.reporter.Reporter;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,6 +28,12 @@ import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import zipkin2.Annotation;
+import zipkin2.reporter.Reporter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -45,14 +44,14 @@ public class SleuthSpanCreatorAspectTests {
 	@Autowired TestBeanInterface testBean;
 	@Autowired Tracer tracer;
 	@Autowired ArrayListSpanReporter reporter;
-	
-	@Before
-	public void setup() {
+
+	@BeforeEach
+    void setup() {
 		this.reporter.clear();
 	}
-	
+
 	@Test
-	public void shouldCreateSpanWhenAnnotationOnInterfaceMethod() {
+    void shouldCreateSpanWhenAnnotationOnInterfaceMethod() {
 		this.testBean.testMethod();
 
 		List<zipkin2.Span> spans = this.reporter.getSpans();
@@ -60,9 +59,9 @@ public class SleuthSpanCreatorAspectTests {
 		then(spans.get(0).name()).isEqualTo("test-method");
 		then(spans.get(0).duration()).isNotZero();
 	}
-	
+
 	@Test
-	public void shouldCreateSpanWhenAnnotationOnClassMethod() {
+    void shouldCreateSpanWhenAnnotationOnClassMethod() {
 		this.testBean.testMethod2();
 
 		List<zipkin2.Span> spans = this.reporter.getSpans();
@@ -70,9 +69,9 @@ public class SleuthSpanCreatorAspectTests {
 		then(spans.get(0).name()).isEqualTo("test-method2");
 		then(spans.get(0).duration()).isNotZero();
 	}
-	
+
 	@Test
-	public void shouldCreateSpanWithCustomNameWhenAnnotationOnClassMethod() {
+    void shouldCreateSpanWithCustomNameWhenAnnotationOnClassMethod() {
 		this.testBean.testMethod3();
 
 		List<zipkin2.Span> spans = this.reporter.getSpans();
@@ -80,9 +79,9 @@ public class SleuthSpanCreatorAspectTests {
 		then(spans.get(0).name()).isEqualTo("custom-name-on-test-method3");
 		then(spans.get(0).duration()).isNotZero();
 	}
-	
+
 	@Test
-	public void shouldCreateSpanWithCustomNameWhenAnnotationOnInterfaceMethod() {
+    void shouldCreateSpanWithCustomNameWhenAnnotationOnInterfaceMethod() {
 		this.testBean.testMethod4();
 
 		List<zipkin2.Span> spans = this.reporter.getSpans();
@@ -90,9 +89,9 @@ public class SleuthSpanCreatorAspectTests {
 		then(spans.get(0).name()).isEqualTo("custom-name-on-test-method4");
 		then(spans.get(0).duration()).isNotZero();
 	}
-	
+
 	@Test
-	public void shouldCreateSpanWithTagWhenAnnotationOnInterfaceMethod() {
+    void shouldCreateSpanWithTagWhenAnnotationOnInterfaceMethod() {
 		// tag::execution[]
 		this.testBean.testMethod5("test");
 		// end::execution[]
@@ -103,9 +102,9 @@ public class SleuthSpanCreatorAspectTests {
 		then(spans.get(0).tags()).containsEntry("testTag", "test");
 		then(spans.get(0).duration()).isNotZero();
 	}
-	
+
 	@Test
-	public void shouldCreateSpanWithTagWhenAnnotationOnClassMethod() {
+    void shouldCreateSpanWithTagWhenAnnotationOnClassMethod() {
 		this.testBean.testMethod6("test");
 
 		List<zipkin2.Span> spans = this.reporter.getSpans();
@@ -116,7 +115,7 @@ public class SleuthSpanCreatorAspectTests {
 	}
 
 	@Test
-	public void shouldCreateSpanWithLogWhenAnnotationOnInterfaceMethod() {
+    void shouldCreateSpanWithLogWhenAnnotationOnInterfaceMethod() {
 		this.testBean.testMethod8("test");
 
 		List<zipkin2.Span> spans = this.reporter.getSpans();
@@ -126,7 +125,7 @@ public class SleuthSpanCreatorAspectTests {
 	}
 
 	@Test
-	public void shouldCreateSpanWithLogWhenAnnotationOnClassMethod() {
+    void shouldCreateSpanWithLogWhenAnnotationOnClassMethod() {
 		this.testBean.testMethod9("test");
 
 		List<zipkin2.Span> spans = this.reporter.getSpans();
@@ -139,7 +138,7 @@ public class SleuthSpanCreatorAspectTests {
 	}
 
 	@Test
-	public void shouldContinueSpanWithLogWhenAnnotationOnInterfaceMethod() {
+    void shouldContinueSpanWithLogWhenAnnotationOnInterfaceMethod() {
 		Span span = this.tracer.nextSpan().name("foo");
 
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
@@ -160,7 +159,7 @@ public class SleuthSpanCreatorAspectTests {
 	}
 
 	@Test
-	public void shouldContinueSpanWhenKeyIsUsedOnSpanTagWhenAnnotationOnInterfaceMethod() {
+    void shouldContinueSpanWhenKeyIsUsedOnSpanTagWhenAnnotationOnInterfaceMethod() {
 		Span span = this.tracer.nextSpan().name("foo");
 
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
@@ -181,7 +180,7 @@ public class SleuthSpanCreatorAspectTests {
 	}
 
 	@Test
-	public void shouldContinueSpanWithLogWhenAnnotationOnClassMethod() {
+    void shouldContinueSpanWithLogWhenAnnotationOnClassMethod() {
 		Span span = this.tracer.nextSpan().name("foo");
 
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
@@ -206,7 +205,7 @@ public class SleuthSpanCreatorAspectTests {
 	}
 
 	@Test
-	public void shouldAddErrorTagWhenExceptionOccurredInNewSpan() {
+    void shouldAddErrorTagWhenExceptionOccurredInNewSpan() {
 		try {
 			this.testBean.testMethod12("test");
 		} catch (RuntimeException ignored) {
@@ -222,7 +221,7 @@ public class SleuthSpanCreatorAspectTests {
 	}
 
 	@Test
-	public void shouldAddErrorTagWhenExceptionOccurredInContinueSpan() {
+    void shouldAddErrorTagWhenExceptionOccurredInContinueSpan() {
 		Span span = this.tracer.nextSpan().name("foo");
 
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
@@ -247,7 +246,7 @@ public class SleuthSpanCreatorAspectTests {
 	}
 
 	@Test
-	public void shouldNotCreateSpanWhenNotAnnotated() {
+    void shouldNotCreateSpanWhenNotAnnotated() {
 		this.testBean.testMethod7();
 
 		List<zipkin2.Span> spans = new ArrayList<>(this.reporter.getSpans());

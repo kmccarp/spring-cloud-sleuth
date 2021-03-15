@@ -16,14 +16,6 @@
 
 package org.springframework.cloud.sleuth.documentation;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import brave.Span;
 import brave.Tracer;
 import brave.Tracing;
@@ -31,8 +23,7 @@ import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
 import brave.sampler.Sampler;
 import org.assertj.core.api.BDDAssertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.cloud.sleuth.DefaultSpanNamer;
 import org.springframework.cloud.sleuth.SpanName;
 import org.springframework.cloud.sleuth.SpanNamer;
@@ -41,6 +32,10 @@ import org.springframework.cloud.sleuth.instrument.async.TraceRunnable;
 import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.*;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -62,8 +57,8 @@ public class SpringCloudSleuthDocTests {
 			.build();
 	Tracer tracer = tracing.tracer();
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		this.reporter.clear();
 	}
 

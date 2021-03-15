@@ -16,10 +16,6 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client.feign;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-
 import brave.Span;
 import brave.Tracer;
 import brave.Tracing;
@@ -29,15 +25,18 @@ import brave.propagation.ThreadLocalCurrentTraceContext;
 import feign.Client;
 import feign.Request;
 import org.assertj.core.api.BDDAssertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cloud.sleuth.instrument.web.SleuthHttpParserAccessor;
 import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
+
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.HashMap;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -62,13 +61,13 @@ public class TracingFeignClientTests {
 	@Mock Client client;
 	Client traceFeignClient;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		this.traceFeignClient = TracingFeignClient.create(this.httpTracing, this.client);
 	}
 
 	@Test
-	public void should_log_cr_when_response_successful() throws IOException {
+    void should_log_cr_when_response_successful() throws IOException {
 		Span span = this.tracer.nextSpan().name("foo");
 
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
@@ -84,7 +83,7 @@ public class TracingFeignClientTests {
 	}
 
 	@Test
-	public void should_log_error_when_exception_thrown() throws IOException {
+    void should_log_error_when_exception_thrown() throws IOException {
 		Span span = this.tracer.nextSpan().name("foo");
 		BDDMockito.given(this.client.execute(BDDMockito.any(), BDDMockito.any()))
 				.willThrow(new RuntimeException("exception has occurred"));
@@ -106,7 +105,7 @@ public class TracingFeignClientTests {
 	}
 
 	@Test
-	public void should_shorten_the_span_name() throws IOException {
+    void should_shorten_the_span_name() throws IOException {
 		this.traceFeignClient.execute(
 				Request.create("GET", "http://foo/" + bigName(), new HashMap<>(), "".getBytes(),
 						Charset.defaultCharset()), new Request.Options());

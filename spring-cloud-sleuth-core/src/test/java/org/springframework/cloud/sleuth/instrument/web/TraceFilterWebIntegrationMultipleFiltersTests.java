@@ -16,22 +16,10 @@
 
 package org.springframework.cloud.sleuth.instrument.web;
 
-import java.io.IOException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.PreDestroy;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
 import brave.Span;
 import brave.Tracing;
 import brave.sampler.Sampler;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -47,13 +35,24 @@ import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.GenericFilterBean;
 
+import javax.annotation.PreDestroy;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import java.io.IOException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
+
 import static org.assertj.core.api.BDDAssertions.then;
 
 /**
  * @author Marcin Grzejszczak
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { TraceFilterWebIntegrationMultipleFiltersTests.Config.class },
+@SpringBootTest(classes = {TraceFilterWebIntegrationMultipleFiltersTests.Config.class},
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		properties = "spring.sleuth.http.legacy.enabled=true")
 public class TraceFilterWebIntegrationMultipleFiltersTests {
@@ -69,7 +68,7 @@ public class TraceFilterWebIntegrationMultipleFiltersTests {
 	@Autowired MyExecutor cglibExecutor;
 
 	@Test
-	public void should_register_trace_filter_before_the_custom_filter() {
+    void should_register_trace_filter_before_the_custom_filter() {
 		this.myExecutor.execute(() -> System.out.println("foo"));
 		this.cglibExecutor.execute(() -> System.out.println("foo"));
 		this.finalExecutor.execute(() -> System.out.println("foo"));

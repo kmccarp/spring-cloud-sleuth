@@ -16,15 +16,14 @@
 
 package org.springframework.cloud.sleuth.instrument.async;
 
-import java.util.concurrent.Executor;
-
 import org.apache.commons.configuration.beanutils.BeanFactory;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
+
+import java.util.concurrent.Executor;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -39,7 +38,7 @@ public class LazyTraceAsyncCustomizerTest {
 	@InjectMocks LazyTraceAsyncCustomizer lazyTraceAsyncCustomizer;
 
 	@Test
-	public void should_wrap_async_executor_in_trace_version() throws Exception {
+    void should_wrap_async_executor_in_trace_version() throws Exception {
 		Executor executor = this.lazyTraceAsyncCustomizer.getAsyncExecutor();
 
 		then(executor).isExactlyInstanceOf(LazyTraceExecutor.class);

@@ -17,8 +17,8 @@
 package org.springframework.cloud.sleuth.instrument.messaging;
 
 import brave.Tracing;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +32,8 @@ public class TracingChannelInterceptorAutowireTest {
 		}
 	}
 
-	@Test public void autowiredWithBeanConfig() {
+	@Test
+    void autowiredWithBeanConfig() {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		ctx.register(TracingConfiguration.class);
 		ctx.register(TracingChannelInterceptor.class);
@@ -41,7 +42,8 @@ public class TracingChannelInterceptorAutowireTest {
 		ctx.getBean(ChannelInterceptor.class);
 	}
 
-	@After public void close() {
+	@AfterEach
+    void close() {
 		Tracing.current().close();
 	}
 }

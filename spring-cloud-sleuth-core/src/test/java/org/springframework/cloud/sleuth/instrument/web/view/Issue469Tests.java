@@ -16,8 +16,7 @@
 
 package org.springframework.cloud.sleuth.instrument.web.view;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
@@ -40,7 +39,7 @@ public class Issue469Tests {
 	RestTemplate restTemplate = new RestTemplate();
 
 	@Test
-	public void should_not_result_in_tracing_exceptions_when_using_view_controllers() throws Exception {
+    void should_not_result_in_tracing_exceptions_when_using_view_controllers() throws Exception {
 		try {
 			this.restTemplate
 					.getForObject("http://localhost:" + port() + "/welcome", String.class);

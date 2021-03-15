@@ -16,8 +16,6 @@
 
 package org.springframework.cloud.sleuth.instrument.hystrix;
 
-import java.util.List;
-
 import brave.Span;
 import brave.Tracer;
 import brave.Tracing;
@@ -28,9 +26,11 @@ import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
 import com.netflix.hystrix.strategy.HystrixPlugins;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
+
+import java.util.List;
 
 import static com.netflix.hystrix.HystrixCommand.Setter.withGroupKey;
 import static com.netflix.hystrix.HystrixCommandGroupKey.Factory.asKey;
@@ -47,14 +47,14 @@ public class TraceCommandTests {
 			.build();
 	Tracer tracer = this.tracing.tracer();
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		HystrixPlugins.reset();
 		this.reporter.clear();
 	}
 
 	@Test
-	public void should_remove_span_from_thread_local_after_finishing_work()
+    void should_remove_span_from_thread_local_after_finishing_work()
 			throws Exception {
 		Span firstSpanFromHystrix = givenACommandWasExecuted(traceReturningCommand());
 
@@ -63,8 +63,9 @@ public class TraceCommandTests {
 		then(secondSpanFromHystrix.context().traceId()).as("second trace id")
 				.isNotEqualTo(firstSpanFromHystrix.context().traceId()).as("first trace id");
 	}
+
 	@Test
-	public void should_create_a_local_span_with_proper_tags_when_hystrix_command_gets_executed()
+    void should_create_a_local_span_with_proper_tags_when_hystrix_command_gets_executed()
 			throws Exception {
 		whenCommandIsExecuted(traceReturningCommand());
 
@@ -76,7 +77,7 @@ public class TraceCommandTests {
 	}
 
 	@Test
-	public void should_run_Hystrix_command_with_span_passed_from_parent_thread() {
+    void should_run_Hystrix_command_with_span_passed_from_parent_thread() {
 		Span span = this.tracer.nextSpan();
 
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span.start())) {
@@ -96,7 +97,7 @@ public class TraceCommandTests {
 	}
 
 	@Test
-	public void should_pass_tracing_information_when_using_Hystrix_commands() {
+    void should_pass_tracing_information_when_using_Hystrix_commands() {
 		Tracer tracer = this.tracer;
 		HystrixCommand.Setter setter = withGroupKey(asKey("group"))
 				.andCommandKey(HystrixCommandKey.Factory.asKey("command"));

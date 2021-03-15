@@ -16,22 +16,14 @@
 
 package org.springframework.cloud.sleuth.instrument.reactor;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import brave.Span;
 import brave.Tracer;
 import brave.sampler.Sampler;
-import reactor.core.publisher.BaseSubscriber;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Hooks;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.awaitility.Awaitility;
-import org.junit.AfterClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +32,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
+import reactor.core.publisher.BaseSubscriber;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Hooks;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -52,7 +51,8 @@ public class SpanSubscriberTests {
 
 	@Autowired Tracer tracer;
 
-	@Test public void should_pass_tracing_info_when_using_reactor() {
+	@Test
+    void should_pass_tracing_info_when_using_reactor() {
 		Span span = this.tracer.nextSpan().name("foo").start();
 		final AtomicReference<Span> spanInOperation = new AtomicReference<>();
 		Publisher<Integer> traced = Flux.just(1, 2, 3);
@@ -60,14 +60,14 @@ public class SpanSubscriberTests {
 
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span)) {
 			Flux.from(traced)
-					.map( d -> d + 1)
-					.map( d -> d + 1)
-					.map( (d) -> {
+					.map(d -> d + 1)
+					.map(d -> d + 1)
+					.map((d) -> {
 						spanInOperation.set(
 								SpanSubscriberTests.this.tracer.currentSpan());
 						return d + 1;
 					})
-					.map( d -> d + 1)
+					.map(d -> d + 1)
 					.subscribe(System.out::println);
 		} finally {
 			span.finish();
@@ -78,7 +78,8 @@ public class SpanSubscriberTests {
 				.isEqualTo(span.context().traceId());
 	}
 
-	@Test public void should_support_reactor_fusion_optimization() {
+	@Test
+    void should_support_reactor_fusion_optimization() {
 		Span span = this.tracer.nextSpan().name("foo").start();
 		final AtomicReference<Span> spanInOperation = new AtomicReference<>();
 		log.info("Hello");
@@ -97,14 +98,16 @@ public class SpanSubscriberTests {
 		then(spanInOperation.get().context().traceId()).isEqualTo(span.context().traceId());
 	}
 
-	@Test public void should_not_trace_scalar_flows() {
+	@Test
+    void should_not_trace_scalar_flows() {
 		Span span = this.tracer.nextSpan().name("foo").start();
 		final AtomicReference<Subscription> spanInOperation = new AtomicReference<>();
 		log.info("Hello");
 
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(span)) {
 			Mono.just(1).subscribe(new BaseSubscriber<Integer>() {
-				@Override protected void hookOnSubscribe(Subscription subscription) {
+				@Override
+                protected void hookOnSubscribe(Subscription subscription) {
 					spanInOperation.set(subscription);
 				}
 			});
@@ -145,7 +148,7 @@ public class SpanSubscriberTests {
 	}
 
 	@Test
-	public void should_pass_tracing_info_when_using_reactor_async() {
+    void should_pass_tracing_info_when_using_reactor_async() {
 		Span span = this.tracer.nextSpan().name("foo").start();
 		final AtomicReference<Span> spanInOperation = new AtomicReference<>();
 		log.info("Hello");
@@ -186,7 +189,7 @@ public class SpanSubscriberTests {
 	}
 
 	@Test
-	public void checkSequenceOfOperations() {
+    void checkSequenceOfOperations() {
 		Span parentSpan = this.tracer.nextSpan().name("foo").start();
 		log.info("Hello");
 		try (Tracer.SpanInScope ws = this.tracer.withSpanInScope(parentSpan)) {
@@ -198,12 +201,13 @@ public class SpanSubscriberTests {
 			final Long secondTraceId = Mono.fromCallable(tracer::currentSpan)
 					.map(span -> span.context().traceId())
 					.block();
-			then(secondTraceId).isEqualTo(traceId); // different trace ids here
+			then(secondTraceId).isEqualTo(traceId);
+ // different trace ids here
 		}
 	}
 
 	@Test
-	public void checkTraceIdDuringZipOperation() {
+    void checkTraceIdDuringZipOperation() {
 		Span initSpan = this.tracer.nextSpan().name("foo").start();
 		final AtomicReference<Long> spanInOperation = new AtomicReference<>();
 		final AtomicReference<Long> spanInZipOperation = new AtomicReference<>();
@@ -219,13 +223,15 @@ public class SpanSubscriberTests {
 					.block();
 		}
 
-		then(spanInZipOperation).hasValue(initSpan.context().traceId()); // ok here
-		then(spanInOperation).hasValue(initSpan.context().traceId()); // Expecting <AtomicReference[null]> to have value: <1L> but did not.
+		then(spanInZipOperation).hasValue(initSpan.context().traceId());
+ // ok here
+		then(spanInOperation).hasValue(initSpan.context().traceId());
+ // Expecting <AtomicReference[null]> to have value: <1L> but did not.
 	}
 
 	// #646
 	@Test
-	public void should_work_for_mono_just_with_flat_map() {
+    void should_work_for_mono_just_with_flat_map() {
 		Span initSpan = this.tracer.nextSpan().name("foo").start();
 		log.info("Hello");
 
@@ -235,8 +241,8 @@ public class SpanSubscriberTests {
 		}
 	}
 
-	@AfterClass
-	public static void cleanup() {
+	@AfterAll
+    static void cleanup() {
 		Hooks.resetOnLastOperator();
 		Hooks.resetOnEachOperator();
 		Schedulers.resetFactory();

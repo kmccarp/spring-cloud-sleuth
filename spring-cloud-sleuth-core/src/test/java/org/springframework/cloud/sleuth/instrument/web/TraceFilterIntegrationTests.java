@@ -16,27 +16,15 @@
 
 package org.springframework.cloud.sleuth.instrument.web;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Optional;
-import java.util.Random;
-import java.util.concurrent.CompletableFuture;
-
 import brave.Span;
 import brave.Tracer;
 import brave.sampler.Sampler;
 import brave.servlet.TracingFilter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
@@ -61,6 +49,13 @@ import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.util.NestedServletException;
 
+import javax.servlet.*;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
@@ -68,7 +63,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TraceFilterIntegrationTests.Config.class,
-properties = "spring.sleuth.http.legacy.enabled=true")
+        properties = "spring.sleuth.http.legacy.enabled=true")
 public class TraceFilterIntegrationTests extends AbstractMvcIntegrationTest {
 	static final String TRACE_ID_NAME = "X-B3-TraceId";
 	static final String SPAN_ID_NAME = "X-B3-SpanId";
@@ -84,14 +79,14 @@ public class TraceFilterIntegrationTests extends AbstractMvcIntegrationTest {
 
 	private static Span span;
 
-	@Before
-	@After
-	public void clearSpans() {
+	@BeforeEach
+	@AfterEach
+    void clearSpans() {
 		this.reporter.clear();
 	}
 
 	@Test
-	public void should_create_a_trace() throws Exception {
+    void should_create_a_trace() throws Exception {
 		whenSentPingWithoutTracingData();
 
 		then(this.reporter.getSpans()).hasSize(1);
@@ -103,7 +98,7 @@ public class TraceFilterIntegrationTests extends AbstractMvcIntegrationTest {
 	}
 
 	@Test
-	public void should_ignore_sampling_the_span_if_uri_matches_management_properties_context_path()
+    void should_ignore_sampling_the_span_if_uri_matches_management_properties_context_path()
 			throws Exception {
 		MvcResult mvcResult = whenSentInfoWithTraceId(new Random().nextLong());
 
@@ -115,7 +110,7 @@ public class TraceFilterIntegrationTests extends AbstractMvcIntegrationTest {
 	}
 
 	@Test
-	public void when_traceId_is_sent_should_not_create_a_new_one_but_return_the_existing_one_instead()
+    void when_traceId_is_sent_should_not_create_a_new_one_but_return_the_existing_one_instead()
 			throws Exception {
 		Long expectedTraceId = new Random().nextLong();
 
@@ -127,7 +122,7 @@ public class TraceFilterIntegrationTests extends AbstractMvcIntegrationTest {
 	}
 
 	@Test
-	public void when_message_is_sent_should_eventually_clear_mdc() throws Exception {
+    void when_message_is_sent_should_eventually_clear_mdc() throws Exception {
 		Long expectedTraceId = new Random().nextLong();
 
 		whenSentPingWithTraceId(expectedTraceId);
@@ -138,7 +133,7 @@ public class TraceFilterIntegrationTests extends AbstractMvcIntegrationTest {
 	}
 
 	@Test
-	public void when_traceId_is_sent_to_async_endpoint_span_is_joined() throws Exception {
+    void when_traceId_is_sent_to_async_endpoint_span_is_joined() throws Exception {
 		Long expectedTraceId = new Random().nextLong();
 
 		MvcResult mvcResult = whenSentFutureWithTraceId(expectedTraceId);
@@ -149,7 +144,7 @@ public class TraceFilterIntegrationTests extends AbstractMvcIntegrationTest {
 	}
 
 	@Test
-	public void should_add_a_custom_tag_to_the_span_created_in_controller() throws Exception {
+    void should_add_a_custom_tag_to_the_span_created_in_controller() throws Exception {
 		Long expectedTraceId = new Random().nextLong();
 
 		MvcResult mvcResult = whenSentDeferredWithTraceId(expectedTraceId);
@@ -167,7 +162,7 @@ public class TraceFilterIntegrationTests extends AbstractMvcIntegrationTest {
 	}
 
 	@Test
-	public void should_log_tracing_information_when_404_exception_was_thrown() throws Exception {
+    void should_log_tracing_information_when_404_exception_was_thrown() throws Exception {
 		Long expectedTraceId = new Random().nextLong();
 
 		whenSentToNonExistentEndpointWithTraceId(expectedTraceId);
@@ -182,7 +177,7 @@ public class TraceFilterIntegrationTests extends AbstractMvcIntegrationTest {
 	}
 
 	@Test
-	public void should_log_tracing_information_when_500_exception_was_thrown() throws Exception {
+    void should_log_tracing_information_when_500_exception_was_thrown() throws Exception {
 		Long expectedTraceId = new Random().nextLong();
 
 		try {
@@ -200,7 +195,7 @@ public class TraceFilterIntegrationTests extends AbstractMvcIntegrationTest {
 	}
 
 	@Test
-	public void should_assume_that_a_request_without_span_and_with_trace_is_a_root_span() throws Exception {
+    void should_assume_that_a_request_without_span_and_with_trace_is_a_root_span() throws Exception {
 		Long expectedTraceId = new Random().nextLong();
 
 		whenSentRequestWithTraceIdAndNoSpanId(expectedTraceId);
@@ -213,7 +208,7 @@ public class TraceFilterIntegrationTests extends AbstractMvcIntegrationTest {
 	}
 
 	@Test
-	public void should_return_custom_response_headers_when_custom_trace_filter_gets_registered() throws Exception {
+    void should_return_custom_response_headers_when_custom_trace_filter_gets_registered() throws Exception {
 		Long expectedTraceId = new Random().nextLong();
 
 		MvcResult mvcResult = whenSentPingWithTraceId(expectedTraceId);
@@ -396,4 +391,3 @@ class MyFilter extends GenericFilterBean {
 		chain.doFilter(request, response);
 	}
 }
-//end::response_headers[]

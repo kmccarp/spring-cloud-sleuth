@@ -6,8 +6,8 @@ import brave.propagation.ThreadLocalCurrentTraceContext;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.assertj.core.api.BDDAssertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.cloud.sleuth.DefaultSpanNamer;
@@ -27,8 +27,8 @@ public class TraceAsyncAspectTest {
 			.build();
 	ProceedingJoinPoint point = Mockito.mock(ProceedingJoinPoint.class);
 
-	@Before
-	public void setup() throws NoSuchMethodException {
+	@BeforeEach
+    void setup() throws NoSuchMethodException {
 		MethodSignature signature = Mockito.mock(MethodSignature.class);
 		BDDMockito.given(signature.getName()).willReturn("fooBar");
 		BDDMockito.given(signature.getMethod()).willReturn(TraceAsyncAspectTest.class.getMethod("setup"));
@@ -37,10 +37,12 @@ public class TraceAsyncAspectTest {
 	}
 
 	//Issue#926
-	@Test public void should_work() throws Throwable {
+	@Test
+    void should_work() throws Throwable {
 		TraceAsyncAspect asyncAspect = new TraceAsyncAspect(this.tracing.tracer(),
 				new DefaultSpanNamer()) {
-			@Override String name(ProceedingJoinPoint pjp) {
+			@Override
+            String name(ProceedingJoinPoint pjp) {
 				return "foo-bar";
 			}
 		};

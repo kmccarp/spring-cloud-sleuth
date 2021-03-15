@@ -16,13 +16,8 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
 import brave.spring.web.TracingClientHttpRequestInterceptor;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -38,6 +33,10 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.BDDAssertions.then;
 
 /**
@@ -52,8 +51,8 @@ public class TraceWebClientAutoConfigurationTests {
 	@Autowired RestTemplateBuilder builder;
 
 	@Test
-	public void should_add_rest_template_interceptors() {
- 		assertInterceptorsOrder(assertInterceptorsNotEmpty(this.restTemplate));
+    void should_add_rest_template_interceptors() {
+        assertInterceptorsOrder(assertInterceptorsNotEmpty(this.restTemplate));
 		assertInterceptorsOrder(assertInterceptorsNotEmpty(this.secondRestTemplate));
 		assertInterceptorsOrder(assertInterceptorsNotEmpty(this.builder.build()));
 	}

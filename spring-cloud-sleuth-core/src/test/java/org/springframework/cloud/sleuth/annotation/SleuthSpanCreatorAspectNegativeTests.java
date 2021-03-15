@@ -16,14 +16,9 @@
 
 package org.springframework.cloud.sleuth.annotation;
 
-import java.util.List;
-
 import brave.sampler.Sampler;
-import zipkin2.Span;
-import zipkin2.reporter.Reporter;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +26,10 @@ import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
+import zipkin2.Span;
+import zipkin2.reporter.Reporter;
+
+import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -42,20 +41,20 @@ public class SleuthSpanCreatorAspectNegativeTests {
 	@Autowired TestBeanInterface annotatedTestBean;
 	@Autowired ArrayListSpanReporter reporter;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+    void setup() {
 		this.reporter.clear();
 	}
 
 	@Test
-	public void shouldNotCallAdviceForNotAnnotatedBean() {
+    void shouldNotCallAdviceForNotAnnotatedBean() {
 		this.testBean.testMethod();
 
 		then(this.reporter.getSpans()).isEmpty();
 	}
 
 	@Test
-	public void shouldCallAdviceForAnnotatedBean() throws Throwable {
+    void shouldCallAdviceForAnnotatedBean() throws Throwable {
 		this.annotatedTestBean.testMethod();
 
 		List<Span> spans = this.reporter.getSpans();

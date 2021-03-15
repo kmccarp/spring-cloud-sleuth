@@ -15,27 +15,12 @@
  */
 package integration;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
-import java.util.stream.Collectors;
-
 import brave.sampler.Sampler;
 import integration.ZipkinTests.WaitUntilZipkinIsUpConfig;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import sample.SampleZipkinApplication;
-import tools.AbstractIntegrationTest;
-import tools.SpanUtil;
-import zipkin2.Span;
-import zipkin2.codec.SpanBytesDecoder;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,12 +30,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import sample.SampleZipkinApplication;
+import tools.AbstractIntegrationTest;
+import tools.SpanUtil;
+import zipkin2.Span;
+import zipkin2.codec.SpanBytesDecoder;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.BDDAssertions.then;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = { WaitUntilZipkinIsUpConfig.class, SampleZipkinApplication.class },
+@SpringBootTest(classes = {WaitUntilZipkinIsUpConfig.class, SampleZipkinApplication.class},
 		webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestPropertySource(properties = {"sample.zipkin.enabled=true"})
 public class ZipkinTests extends AbstractIntegrationTest {
@@ -63,7 +56,7 @@ public class ZipkinTests extends AbstractIntegrationTest {
 	@Autowired ZipkinProperties zipkinProperties;
 
 	@Test
-	public void should_propagate_spans_to_zipkin() throws Exception {
+    void should_propagate_spans_to_zipkin() throws Exception {
 		zipkin.enqueue(new MockResponse());
 
 		long traceId = new Random().nextLong();

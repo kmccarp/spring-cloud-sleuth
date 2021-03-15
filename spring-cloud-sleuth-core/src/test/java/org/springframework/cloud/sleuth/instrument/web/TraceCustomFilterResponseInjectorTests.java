@@ -16,20 +16,9 @@
 
 package org.springframework.cloud.sleuth.instrument.web;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
 import brave.Span;
 import brave.http.HttpTracing;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,6 +38,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.GenericFilterBean;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.assertj.core.api.BDDAssertions.then;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -62,10 +61,10 @@ public class TraceCustomFilterResponseInjectorTests {
 	@Autowired RestTemplate restTemplate;
 	@Autowired Config config;
 	@Autowired CustomRestController customRestController;
-	
+
 	@Test
 	@SuppressWarnings("unchecked")
-	public void should_inject_trace_and_span_ids_in_response_headers() {
+    void should_inject_trace_and_span_ids_in_response_headers() {
 		RequestEntity<?> requestEntity = RequestEntity
 				.get(URI.create("http://localhost:" + this.config.port + "/headers"))
 				.build();

@@ -16,33 +16,31 @@
 
 package org.springframework.cloud.sleuth.instrument.hystrix;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import brave.Span;
 import brave.Tracing;
 import brave.sampler.Sampler;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.strategy.HystrixPlugins;
 import org.awaitility.Awaitility;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.sleuth.instrument.DefaultTestAutoConfiguration;
 import org.springframework.cloud.netflix.hystrix.EnableHystrix;
+import org.springframework.cloud.sleuth.instrument.DefaultTestAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.strategy.HystrixPlugins;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.BDDAssertions.then;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { HystrixAnnotationsIntegrationTests.TestConfig.class })
+@SpringBootTest(classes = {HystrixAnnotationsIntegrationTests.TestConfig.class})
 @DirtiesContext
 public class HystrixAnnotationsIntegrationTests {
 
@@ -51,14 +49,14 @@ public class HystrixAnnotationsIntegrationTests {
 	@Autowired
 	Tracing tracer;
 
-	@BeforeClass
-	@AfterClass
-	public static void reset() {
+	@BeforeAll
+	@AfterAll
+    static void reset() {
 		HystrixPlugins.reset();
 	}
 
 	@Test
-	public void should_create_new_span_with_thread_name_when_executed_a_hystrix_command_annotated_method() {
+    void should_create_new_span_with_thread_name_when_executed_a_hystrix_command_annotated_method() {
 		whenHystrixCommandAnnotatedMethodGetsExecuted();
 
 		thenSpanInHystrixThreadIsCreated();

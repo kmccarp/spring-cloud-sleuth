@@ -16,21 +16,15 @@
 
 package org.springframework.cloud.sleuth.instrument.scheduling;
 
-import java.util.AbstractMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import brave.Span;
 import brave.Tracing;
 import brave.sampler.Sampler;
 import net.jcip.annotations.NotThreadSafe;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import zipkin2.reporter.Reporter;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.sleuth.instrument.DefaultTestAutoConfiguration;
@@ -41,6 +35,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
+import zipkin2.reporter.Reporter;
+
+import java.util.AbstractMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.BDDAssertions.then;
@@ -61,9 +59,9 @@ public class TracingOnScheduledTests {
 	@Autowired
 	ArrayListSpanReporter reporter;
 
-	@Before
-	@After
-	public void setup() {
+	@BeforeEach
+	@AfterEach
+    void setup() {
 		this.beanWithScheduledMethod.clear();
 		this.beanWithScheduledMethodToBeIgnored.clear();
 		this.reporter.clear();
@@ -71,7 +69,7 @@ public class TracingOnScheduledTests {
 
 	@Test
 	@DirtiesContext
-	public void should_have_span_set_after_scheduled_method_has_been_executed() {
+    void should_have_span_set_after_scheduled_method_has_been_executed() {
 		await().atMost(10, SECONDS).untilAsserted(() -> {
 			then(this.beanWithScheduledMethod.isExecuted()).isTrue();
 			spanIsSetOnAScheduledMethod();
@@ -79,7 +77,7 @@ public class TracingOnScheduledTests {
 	}
 
 	@Test
-	public void should_have_span_set_with_error_tag() {
+    void should_have_span_set_with_error_tag() {
 		await().atMost(10, SECONDS).untilAsserted(() -> {
 			then(this.throwsAnException.isExecuted()).isTrue();
 			spanIsSetOnAScheduledMethodWithErrorTag();
@@ -87,7 +85,7 @@ public class TracingOnScheduledTests {
 	}
 
 	@Test
-	public void should_have_a_new_span_set_each_time_a_scheduled_method_has_been_executed() {
+    void should_have_a_new_span_set_each_time_a_scheduled_method_has_been_executed() {
 		final Span firstSpan = this.beanWithScheduledMethod.getSpan();
 		await().atMost(5, SECONDS).untilAsserted(() -> {
 			then(this.beanWithScheduledMethod.isExecuted()).isTrue();
@@ -96,7 +94,7 @@ public class TracingOnScheduledTests {
 	}
 
 	@Test
-	public void should_not_create_span_in_the_scheduled_class_that_matches_skip_pattern()
+    void should_not_create_span_in_the_scheduled_class_that_matches_skip_pattern()
 			throws Exception {
 		await().atMost(5, SECONDS).untilAsserted(() -> {
 			then(this.beanWithScheduledMethodToBeIgnored.isExecuted()).isTrue();

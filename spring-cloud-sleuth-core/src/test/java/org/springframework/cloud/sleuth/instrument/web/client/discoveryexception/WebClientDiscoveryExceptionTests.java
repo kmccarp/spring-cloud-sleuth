@@ -16,29 +16,23 @@
 
 package org.springframework.cloud.sleuth.instrument.web.client.discoveryexception;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 import brave.Span;
 import brave.Tracer;
 import brave.sampler.Sampler;
-import zipkin2.reporter.Reporter;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.sleuth.instrument.web.TraceWebServletAutoConfiguration;
-import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration;
+import org.springframework.cloud.netflix.ribbon.RibbonClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.cloud.netflix.ribbon.RibbonClient;
+import org.springframework.cloud.sleuth.instrument.web.TraceWebServletAutoConfiguration;
+import org.springframework.cloud.sleuth.util.ArrayListSpanReporter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
@@ -48,15 +42,20 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
+import zipkin2.reporter.Reporter;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {
-		WebClientDiscoveryExceptionTests.TestConfiguration.class }, webEnvironment = RANDOM_PORT)
-@TestPropertySource(properties = { "spring.application.name=exceptionservice",
-		"spring.sleuth.http.legacy.enabled=true" })
+		WebClientDiscoveryExceptionTests.TestConfiguration.class}, webEnvironment = RANDOM_PORT)
+@TestPropertySource(properties = {"spring.application.name=exceptionservice",
+		"spring.sleuth.http.legacy.enabled=true"})
 @DirtiesContext
 public class WebClientDiscoveryExceptionTests {
 
@@ -65,8 +64,8 @@ public class WebClientDiscoveryExceptionTests {
 	@Autowired Tracer tracer;
 	@Autowired ArrayListSpanReporter reporter;
 
-	@Before
-	public void close() {
+	@BeforeEach
+    void close() {
 		this.reporter.clear();
 	}
 
@@ -95,14 +94,14 @@ public class WebClientDiscoveryExceptionTests {
 	}
 
 	@Test
-	public void testFeignInterfaceWithException() throws Exception {
+    void testFeignInterfaceWithException() throws Exception {
 		shouldCloseSpanUponException(
 				(ResponseEntityProvider) (tests) -> tests.testFeignInterfaceWithException
 						.shouldFailToConnect());
 	}
 
 	@Test
-	public void testTemplate() throws Exception {
+    void testTemplate() throws Exception {
 		shouldCloseSpanUponException((ResponseEntityProvider) (tests) -> tests.template
 				.getForEntity("http://exceptionservice/", Map.class));
 	}
