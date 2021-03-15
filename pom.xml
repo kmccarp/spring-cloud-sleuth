@@ -112,6 +112,63 @@
 		</pluginManagement>
 		<plugins>
 			<plugin>
+				<groupId>org.openrewrite.maven</groupId>
+				<artifactId>rewrite-maven-plugin</artifactId>
+				<version>${rewrite.maven-plugin.version}</version>
+				<configuration>
+					<activeRecipes>
+						<recipe>org.openrewrite.java.testing.junit5.JUnit5BestPractices</recipe>
+					</activeRecipes>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.openrewrite.recipe</groupId>
+						<artifactId>rewrite-spring</artifactId>
+						<version>${rewrite.spring.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.openrewrite</groupId>
+						<artifactId>rewrite-core</artifactId>
+						<version>${rewrite.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.openrewrite</groupId>
+						<artifactId>rewrite-java</artifactId>
+						<version>${rewrite.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.openrewrite</groupId>
+						<artifactId>rewrite-java-8</artifactId>
+						<version>${rewrite.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.openrewrite</groupId>
+						<artifactId>rewrite-maven</artifactId>
+						<version>${rewrite.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.openrewrite</groupId>
+						<artifactId>rewrite-properties</artifactId>
+						<version>${rewrite.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.openrewrite</groupId>
+						<artifactId>rewrite-maven</artifactId>
+						<version>${rewrite.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.openrewrite</groupId>
+						<artifactId>rewrite-xml</artifactId>
+						<version>${rewrite.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.openrewrite</groupId>
+						<artifactId>rewrite-yaml</artifactId>
+						<version>${rewrite.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<version>${checkstyle.version}</version>
@@ -281,6 +338,10 @@
 		<spring-cloud-openfeign.version>2.0.0.BUILD-SNAPSHOT</spring-cloud-openfeign.version>
 		<brave.version>5.6.10</brave.version>
 		<spring-security-boot-autoconfigure.version>2.0.0.RELEASE</spring-security-boot-autoconfigure.version>
+
+		<rewrite.version>7.0.0-SNAPSHOT</rewrite.version>
+		<rewrite.spring.version>4.0.0-SNAPSHOT</rewrite.spring.version>
+		<rewrite.maven-plugin.version>3.0.0-SNAPSHOT</rewrite.maven-plugin.version>
 	</properties>
 
 	<profiles>
