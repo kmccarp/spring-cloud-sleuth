@@ -16,18 +16,12 @@
 
 package org.springframework.cloud.sleuth.zipkin2;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.Map;
-
 import brave.Span;
 import brave.Tracing;
 import brave.sampler.Sampler;
 import okhttp3.mockwebserver.MockWebServer;
 import org.awaitility.Awaitility;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,13 +32,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.Map;
+
 import static org.assertj.core.api.BDDAssertions.then;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ZipkinDiscoveryClientTests.Config.class, properties = {
 		"spring.zipkin.baseUrl=http://zipkin/",
-		"spring.zipkin.sender.type=web" // override default priority which picks rabbit due to classpath
-})
+		"spring.zipkin.sender.type=web"        // override default priority which picks rabbit due to classpath
+        })
 public class ZipkinDiscoveryClientTests {
 
 	@ClassRule public static MockWebServer ZIPKIN_RULE = new MockWebServer();
@@ -52,7 +50,7 @@ public class ZipkinDiscoveryClientTests {
 	@Autowired Tracing tracing;
 
 	@Test
-	public void shouldUseDiscoveryClientToFindZipkinUrlIfPresent() throws Exception {
+    void shouldUseDiscoveryClientToFindZipkinUrlIfPresent() throws Exception {
 		Span span = this.tracing.tracer().nextSpan().name("foo").start();
 
 		span.finish();
