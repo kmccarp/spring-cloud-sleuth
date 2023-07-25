@@ -227,11 +227,10 @@ public abstract class ReactorSleuth {
 		LazyBean<CurrentTraceContext> lazyCurrentTraceContext = LazyBean.create(springContext,
 				CurrentTraceContext.class);
 
-		return Operators.liftPublisher(p -> {
+		return Operators.liftPublisher(p ->
 			// We don't scope scalar results as they happen in an instant. This prevents
 			// excessive overhead when using Flux/Mono #just, #empty, #error, etc.
-			return !(p instanceof Fuseable.ScalarCallable) && springContext.isActive();
-		}, (p, sub) -> {
+			!(p instanceof Fuseable.ScalarCallable) && springContext.isActive(), (p, sub) -> {
 			Context ctxBefore = context(sub);
 			Context context = contextWithBeans(ctxBefore, lazyTracer, lazyCurrentTraceContext);
 			if (context == ctxBefore) {
@@ -633,8 +632,8 @@ public abstract class ReactorSleuth {
 	@SuppressWarnings("unchecked")
 	public static AtomicReference<Span> getPendingSpan(ContextView context) {
 		Object objectSpan = context.getOrDefault(ReactorSleuth.PENDING_SPAN_KEY, null);
-		if ((objectSpan instanceof AtomicReference)) {
-			return ((AtomicReference<Span>) objectSpan);
+		if (objectSpan instanceof AtomicReference) {
+			return (AtomicReference<Span>) objectSpan;
 		}
 		return null;
 	}
@@ -758,7 +757,7 @@ public abstract class ReactorSleuth {
 				if (peek instanceof Envelope) {
 					Envelope envelope = (Envelope) peek;
 					restoreTheContext(envelope);
-					return (envelope).body;
+					return envelope.body;
 				}
 				return peek;
 			}
@@ -779,7 +778,7 @@ public abstract class ReactorSleuth {
 						if (next instanceof Envelope) {
 							Envelope envelope = (Envelope) next;
 							restoreTheContext(envelope);
-							return (envelope).body;
+							return envelope.body;
 						}
 						return next;
 					}

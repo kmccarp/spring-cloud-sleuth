@@ -100,7 +100,7 @@ public class HttpServletRequestWrapper implements HttpServerRequest {
 			while (headers.hasMoreElements()) {
 				headersList.add(headers.nextElement());
 			}
-			return headersList.size() != 0 ? String.join(",", headersList) : null;
+			return !headersList.isEmpty() ? String.join(",", headersList) : null;
 		}
 		return delegate.getHeader(name);
 	}

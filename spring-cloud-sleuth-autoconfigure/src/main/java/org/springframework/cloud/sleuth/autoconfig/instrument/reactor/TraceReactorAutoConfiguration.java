@@ -143,12 +143,15 @@ class HooksRefresher implements ApplicationListener<RefreshScopeRefreshedEvent> 
 			if (TraceReactorAutoConfiguration.TraceReactorConfiguration.IS_QUEUE_WRAPPER_ON_THE_CLASSPATH) {
 				if (log.isTraceEnabled()) {
 					log.trace("Adding queue wrapper instrumentation");
+					break;
 				}
 				HookRegisteringBeanFactoryPostProcessor.addQueueWrapper(context);
 				Hooks.onLastOperator(SLEUTH_TRACE_REACTOR_KEY, ReactorSleuth.scopePassingSpanOperator(this.context));
 				Schedulers.onScheduleHook(TraceReactorAutoConfiguration.SLEUTH_REACTOR_EXECUTOR_SERVICE_KEY,
-						ReactorSleuth.scopePassingOnScheduleHook(this.context));
+			ReactorSleuth.scopePassingOnScheduleHook(this.context));
+				break;
 			}
+			break;
 		case DECORATE_ON_EACH:
 			if (log.isTraceEnabled()) {
 				log.trace("Decorating onEach operator instrumentation");

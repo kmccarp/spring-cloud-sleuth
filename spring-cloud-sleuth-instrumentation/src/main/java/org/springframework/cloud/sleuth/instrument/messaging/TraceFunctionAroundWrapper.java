@@ -158,7 +158,7 @@ public class TraceFunctionAroundWrapper extends FunctionAroundWrapper
 		if (targetFunction.isConsumer()) {
 			return targetFunction.apply(reactorStreamConsumer(mono));
 		}
-		final Publisher<Message> function = ((Publisher<Message>) targetFunction.apply(mono));
+		final Publisher<Message> function = (Publisher<Message>) targetFunction.apply(mono);
 		if (function instanceof Mono) {
 			return messageMono(targetFunction, (Mono<Message>) function);
 		}
@@ -209,7 +209,7 @@ public class TraceFunctionAroundWrapper extends FunctionAroundWrapper
 		if (targetFunction.isConsumer()) {
 			return targetFunction.apply(reactorStreamConsumer(flux));
 		}
-		final Publisher<Message> function = ((Publisher<Message>) targetFunction.apply(flux));
+		final Publisher<Message> function = (Publisher<Message>) targetFunction.apply(flux);
 		if (function instanceof Mono) {
 			return messageMono(targetFunction, (Mono<Message>) function);
 		}
@@ -274,7 +274,7 @@ public class TraceFunctionAroundWrapper extends FunctionAroundWrapper
 			publisher = ReactorSleuth.tracedMono(tracer, tracer.currentTraceContext(),
 					targetFunction.getFunctionDefinition(), () -> mono, (msg, s) -> {
 						customizedInputMessageSpan(s, msg instanceof Message ? (Message) msg : null);
-					}).map(object -> toMessage(object))
+					}).map(this::toMessage)
 					.map(object -> this.getMessageAndSpans((Message) object, targetFunction.getFunctionDefinition(),
 							setNameAndTag(targetFunction, tracer.currentSpan())))
 					.doOnNext(wrappedOutputMessage -> customizedOutputMessageSpan(
@@ -291,7 +291,7 @@ public class TraceFunctionAroundWrapper extends FunctionAroundWrapper
 			publisher = ReactorSleuth.tracedFlux(tracer, tracer.currentTraceContext(),
 					targetFunction.getFunctionDefinition(), () -> flux, (msg, s) -> {
 						customizedInputMessageSpan(s, msg instanceof Message ? (Message) msg : null);
-					}).map(object -> toMessage(object))
+					}).map(this::toMessage)
 					.map(object -> this.getMessageAndSpans((Message) object, targetFunction.getFunctionDefinition(),
 							setNameAndTag(targetFunction, tracer.currentSpan())))
 					.doOnNext(wrappedOutputMessage -> customizedOutputMessageSpan(
