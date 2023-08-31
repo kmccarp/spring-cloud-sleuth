@@ -212,7 +212,7 @@ public abstract class FlowsScopePassingSpanSubscriberTests {
 		}
 	}
 
-	private static Stream<Arguments> should_not_double_wrap_async_publisher_Args() {
+	private static Stream<Arguments> shouldNotDoubleWrapAsyncPublisherArgs() {
 		return Stream.of(
 				// async source is hidden by Mono.defer()
 				Arguments.of("hidden by defer",

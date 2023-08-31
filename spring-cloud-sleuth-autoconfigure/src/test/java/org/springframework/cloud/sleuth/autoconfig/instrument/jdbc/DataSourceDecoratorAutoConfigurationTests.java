@@ -62,9 +62,9 @@ class DataSourceDecoratorAutoConfigurationTests {
 			DataSource dataSource = context.getBean(DataSource.class);
 			assertThat(dataSource).isInstanceOf(DataSourceWrapper.class);
 
-			DataSourceWrapper DataSourceWrapper = (DataSourceWrapper) dataSource;
-			assertThat(DataSourceWrapper.getDecoratedDataSource()).isInstanceOf(P6DataSource.class);
-			P6DataSource p6DataSource = (P6DataSource) DataSourceWrapper.getDecoratedDataSource();
+			DataSourceWrapper dataSourceWrapper = (dataSourceWrapper) dataSource;
+			assertThat(dataSourceWrapper.getDecoratedDataSource()).isInstanceOf(P6DataSource.class);
+			P6DataSource p6DataSource = (P6DataSource) dataSourceWrapper.getDecoratedDataSource();
 
 			DataSource p6WrappedDataSource = (DataSource) ReflectionTestUtils.getField(p6DataSource, "realDataSource");
 			assertThat(p6WrappedDataSource).isInstanceOf(ProxyDataSource.class);
