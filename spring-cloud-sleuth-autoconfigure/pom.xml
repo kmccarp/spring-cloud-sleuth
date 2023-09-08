@@ -16,8 +16,8 @@
   -->
 
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xmlns="http://maven.apache.org/POM/4.0.0"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>spring-cloud-sleuth-autoconfigure</artifactId>
@@ -31,6 +31,10 @@
 		<version>3.1.10-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
+	<properties>
+		<spring-security-oauth2.version>2.2.4.RELEASE</spring-security-oauth2.version>
+		<spring-vault.version>2.3.3</spring-vault.version>
+	</properties>
 
 	<dependencies>
 		<!-- CORE -->
