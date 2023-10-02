@@ -146,7 +146,7 @@ enum NoOpTracing implements io.lettuce.core.tracing.Tracing, TraceContextProvide
 
 	INSTANCE;
 
-	private final Endpoint NOOP_ENDPOINT = new Endpoint() {
+	private static final Endpoint NOOP_ENDPOINT = new Endpoint() {
 	};
 
 	@Override

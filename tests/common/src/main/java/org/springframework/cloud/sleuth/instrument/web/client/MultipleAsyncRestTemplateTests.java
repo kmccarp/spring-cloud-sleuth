@@ -158,15 +158,13 @@ public abstract class MultipleAsyncRestTemplateTests {
 		}
 
 		private ClientHttpRequestFactory clientHttpRequestFactory() {
-			ClientHttpRequestFactory clientHttpRequestFactory = new CustomClientHttpRequestFactory();
 			// CUSTOMIZE HERE
-			return clientHttpRequestFactory;
+			return new CustomClientHttpRequestFactory();
 		}
 
 		private AsyncClientHttpRequestFactory asyncClientFactory() {
-			AsyncClientHttpRequestFactory factory = new CustomAsyncClientHttpRequestFactory();
 			// CUSTOMIZE HERE
-			return factory;
+			return new CustomAsyncClientHttpRequestFactory();
 		}
 
 	}
