@@ -143,7 +143,7 @@ abstract class AbstractTransactionManagerInstrumenter<T extends TransactionManag
 				}
 				catch (InvocationTargetException ex) {
 					Throwable cause = ex.getCause();
-					throw (cause != null) ? cause : ex;
+					throw cause != null ? cause : ex;
 				}
 			}
 			return invocation.proceed();

@@ -38,7 +38,7 @@ public class BraveAutoConfigurationPropagationCustomizationTests {
 
 	@Test
 	public void stillCreatesDefault() {
-		this.contextRunner.run((context) -> {
+		this.contextRunner.run(context -> {
 			BDDAssertions.then(context.getBean(Propagation.Factory.class).get().keys())
 					.isEqualTo(B3_FACTORY.get().keys());
 		});
@@ -46,7 +46,7 @@ public class BraveAutoConfigurationPropagationCustomizationTests {
 
 	@Test
 	public void allowsCustomization() {
-		this.contextRunner.withPropertyValues("spring.sleuth.baggage.remote-fields=country-code").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.sleuth.baggage.remote-fields=country-code").run(context -> {
 			BDDAssertions.then(context.getBean(Propagation.Factory.class).get().keys())
 					.isEqualTo(B3_FACTORY.get().keys());
 		});
@@ -54,7 +54,7 @@ public class BraveAutoConfigurationPropagationCustomizationTests {
 
 	@Test
 	public void defaultValueUsedWhenApplicationNameNotSet() {
-		this.contextRunner.withPropertyValues("spring.application.name=").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.application.name=").run(context -> {
 			BDDAssertions.then(context.getBean(Propagation.Factory.class).get().keys())
 					.isEqualTo(B3_FACTORY.get().keys());
 		});
@@ -64,7 +64,7 @@ public class BraveAutoConfigurationPropagationCustomizationTests {
 	public void allowsCustomizationOfBuilder() {
 		this.contextRunner.withPropertyValues("spring.sleuth.baggage.remote-fields=country-code")
 				.withUserConfiguration(CustomPropagationFactoryBuilderConfig.class)
-				.run((context) -> BDDAssertions.then(context.getBean(Propagation.Factory.class)).extracting("delegate")
+				.run(context -> BDDAssertions.then(context.getBean(Propagation.Factory.class)).extracting("delegate")
 						.isSameAs(B3SinglePropagation.FACTORY));
 	}
 
